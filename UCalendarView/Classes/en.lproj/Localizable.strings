@@ -1,0 +1,15 @@
+/* 
+  Localizable.strings
+  UICalendatView
+
+  Created by Tomohiro Uchida on 2022/09/04.
+*/
+
+"LabelSunday" = "S"
+"LabelMonday" = "M"
+"LabelTuesDay" = "T"
+"LabelWednesday" = "W"
+"LabelThursday" = "T"
+"LabelFriday" = "F"
+"LabelSaturday" = "S"
+

@@ -1,0 +1,16 @@
+PODS:
+  - UCalendarView (0.1.0)
+
+DEPENDENCIES:
+  - UCalendarView (from `../`)
+
+EXTERNAL SOURCES:
+  UCalendarView:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  UCalendarView: f88031e4e76a460063e1727841bcecdd8a384266
+
+PODFILE CHECKSUM: 774ea6d998ee1514fc21e3bc133a06a930ca5479
+
+COCOAPODS: 1.11.3

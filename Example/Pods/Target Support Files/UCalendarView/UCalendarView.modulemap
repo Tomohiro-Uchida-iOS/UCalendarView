@@ -1,0 +1,6 @@
+framework module UCalendarView {
+  umbrella header "UCalendarView-umbrella.h"
+
+  export *
+  module * { export * }
+}

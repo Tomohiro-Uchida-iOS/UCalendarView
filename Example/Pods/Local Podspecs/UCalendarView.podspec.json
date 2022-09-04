@@ -1,0 +1,22 @@
+{
+  "name": "UCalendarView",
+  "version": "0.1.0",
+  "summary": "A short description of UCalendarView.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Tomohiro-Uchida-iOS/UCalendarView",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Tomohiro-Uchida-iOS": "uchida001tmhr@icloud.com"
+  },
+  "source": {
+    "git": "https://github.com/Tomohiro-Uchida-iOS/UCalendarView.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "UCalendarView/Classes/**/*"
+}
