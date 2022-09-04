@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '10.0'
+
+target 'UCalendarView_Example' do
+  pod 'UCalendarView', :path => '../'
+
+  target 'UCalendarView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
