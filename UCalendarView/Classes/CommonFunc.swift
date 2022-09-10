@@ -31,14 +31,14 @@ extension Date {
         return calendar.date(from: comp)!
     }
     
-    func resetTime() -> Date {
+    public func resetTime() -> Date {
         return self.fixed(hour:0, minute:0, second:0, nanosecond: 0)
     }
         
 }
 
 extension UIColor {
-    class func rgba(red: Int, green: Int, blue: Int, alpha: CGFloat) -> UIColor{
+    public class func rgba(red: Int, green: Int, blue: Int, alpha: CGFloat) -> UIColor{
         return UIColor(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alpha)
     }
 }

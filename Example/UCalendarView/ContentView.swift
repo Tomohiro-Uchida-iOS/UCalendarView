@@ -10,12 +10,37 @@ import SwiftUI
 import UCalendarView
 
 struct ContentView: View {
-
-    @State var entries: [UCEntry] = Array(repeating: UCEntry(), count: 3)
+    
+    @State var month = Date().resetTime()
+    @State var ucEntries: [UCEntry] = []
     
     var body: some View {
-        UCalendarView(entries: entries)
+        UCalendarView(month: month, ucEntries: ucEntries)
+            .onAppear() {
+                let calendar = Calendar(identifier: .gregorian)
+                var components = DateComponents()
+                components.year = calendar.component(.year, from: month)
+                components.month = calendar.component(.month, from: month)
+                for day in 1...28 {
+                    components.day = 1
+                    self.ucEntries.append(UCEntry(
+                        date: calendar.date(from: components)!,
+                        leftLabel: "Left",
+                        leftLabelColor: Color.cyan,
+                        middleLabel: "Middle",
+                        middleLabelColor: Color.cyan,
+                        value: String(format: "Value=%d", day),
+                        valueColor: Color.red,
+                        unit: "Unit",
+                        unitColor: Color.blue,
+                        rightLabel: "Right",
+                        rightLabelColor: Color.cyan,
+                        tableFontSize: 8.0)
+                    )
+                }
+            }
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
