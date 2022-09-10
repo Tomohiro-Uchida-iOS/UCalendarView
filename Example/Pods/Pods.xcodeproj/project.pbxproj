@@ -17,6 +17,7 @@
 		A18A644AE577E3FA6F10A6E2D7A9A99B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		B11C577B28C4C0D5007BD7A0 /* UCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11C577928C4C0D5007BD7A0 /* UCalendarView.swift */; };
 		B11C577C28C4C0D5007BD7A0 /* CommonFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11C577A28C4C0D5007BD7A0 /* CommonFunc.swift */; };
+		B1A4EBA728CCE41C00E7676F /* ObserveModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A4EBA628CCE41C00E7676F /* ObserveModel.swift */; };
 		BF75436A98BE6996234D873667355CD2 /* Pods-UCalendarView_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BF3C9CA1F322D44465BFDBB0BEA50D4 /* Pods-UCalendarView_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,7 @@
 		AD4DB9941B3EA17E5D28BD054B506243 /* Pods-UCalendarView_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-UCalendarView_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
 		B11C577928C4C0D5007BD7A0 /* UCalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UCalendarView.swift; path = UCalendarView/Classes/UCalendarView.swift; sourceTree = "<group>"; };
 		B11C577A28C4C0D5007BD7A0 /* CommonFunc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonFunc.swift; path = UCalendarView/Classes/CommonFunc.swift; sourceTree = "<group>"; };
+		B1A4EBA628CCE41C00E7676F /* ObserveModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ObserveModel.swift; path = UCalendarView/Classes/ObserveModel.swift; sourceTree = "<group>"; };
 		C1CF445997D5DDF0EB12123DDB784B2D /* Pods-UCalendarView_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-UCalendarView_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		C7C566C0987CFF3B6E829F2217C74404 /* UCalendarView-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "UCalendarView-Info.plist"; sourceTree = "<group>"; };
 		C9B0ACE6B5BF68BA759355BEC5B259E0 /* UCalendarView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UCalendarView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -182,6 +184,7 @@
 			children = (
 				B11C577A28C4C0D5007BD7A0 /* CommonFunc.swift */,
 				B11C577928C4C0D5007BD7A0 /* UCalendarView.swift */,
+				B1A4EBA628CCE41C00E7676F /* ObserveModel.swift */,
 				C29FBEE3BD42CB861428D25D4CEA217A /* Pod */,
 				165F910A0EA9C66A245B2697FE9AA093 /* Support Files */,
 			);
@@ -392,6 +395,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1A4EBA728CCE41C00E7676F /* ObserveModel.swift in Sources */,
 				B11C577B28C4C0D5007BD7A0 /* UCalendarView.swift in Sources */,
 				B11C577C28C4C0D5007BD7A0 /* CommonFunc.swift in Sources */,
 				2F38759179BB583D414C724C287969A5 /* UCalendarView-dummy.m in Sources */,

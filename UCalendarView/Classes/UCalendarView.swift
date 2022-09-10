@@ -20,7 +20,7 @@ public class UCEntry {
     var rightLabel: String = ""
     var rightLabelColor: Color = Color.black
     var tableFontSize: CGFloat = 8.0
-        
+    
     public init(
         date: Date,
         leftLabel: String,
@@ -168,7 +168,6 @@ internal struct UCDayView: View {
     }
 }
 
-
 internal class UCWeek {
     var uuid = UUID()
     var weekOfMonth: Int
@@ -212,7 +211,7 @@ internal struct UCWeekView: View {
 internal class UCMonth {
     var month: Date
     var ucWeeks: [UCWeek] = []
-
+    
     public init(
         month: Date,
         ucWeeks: [UCWeek]
@@ -288,8 +287,11 @@ internal func ucEntriesInMonth(
 public struct UCalendarView: View {
 
     @State var month: Date = Date().resetTime()
+    @State var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+    @State var ucWeeks: [UCWeek] = []
     @State var ucDays: [UCDay] = []
     @State var ucEntries: [UCEntry] = []
+    @ObservedObject var obsObject = ObserveModel()
 
     public init(
         month: Date,
@@ -299,18 +301,11 @@ public struct UCalendarView: View {
         self.ucEntries = ucEntries
     }
     
+
+
     public var body: some View {
-        UCMonthView(
-            ucMonth: UCMonth(month: self.month, ucWeeks: [
-                UCWeek(weekOfMonth: 1, ucDays: self.ucDays),
-                UCWeek(weekOfMonth: 2, ucDays: self.ucDays),
-                UCWeek(weekOfMonth: 3, ucDays: self.ucDays),
-                UCWeek(weekOfMonth: 4, ucDays: self.ucDays),
-                UCWeek(weekOfMonth: 5, ucDays: self.ucDays),
-                UCWeek(weekOfMonth: 6, ucDays: self.ucDays)
-            ])
-        )
-        .onAppear(){
+        UCMonthView(ucMonth: ucMonth)
+        .onAppear() {
             let calendar = Calendar(identifier: .gregorian)
             var components = DateComponents()
             components.year = calendar.component(.year, from: self.month)
@@ -323,12 +318,18 @@ public struct UCalendarView: View {
             let dayCount = calendar.component(.day, from: date)
             components.year = calendar.component(.year, from: self.month)
             components.month = calendar.component(.month, from: self.month)
-            for index in 1...dayCount {
+            for day in 1...dayCount {
                 // 日数を0にすることで、前の月の最後の日になる
-                components.day = index
+                components.day = day
                 let ucDay = UCDay(date: calendar.date(from: components)!, ucEntries: self.ucEntries)
                 self.ucDays.append(ucDay)
             }
+            for week in 1...6 {
+                let ucWeek = UCWeek(weekOfMonth: week, ucDays: self.ucDays)
+                self.ucWeeks.append(ucWeek)
+            }
+            self.ucMonth = UCMonth(month: self.month, ucWeeks: self.ucWeeks)
+            obsObject.count += 1
         }
     }
 }
