@@ -210,7 +210,6 @@ internal struct UCWeekView: View {
 
 
 internal class UCMonth {
-    var uuid = UUID()
     var month: Date
     var ucWeeks: [UCWeek] = []
 
