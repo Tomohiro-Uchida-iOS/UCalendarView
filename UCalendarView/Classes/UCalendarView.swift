@@ -172,23 +172,46 @@ private struct UCDayView: View {
     }
 }
 
+
 private class UCWeek {
     var uuid = UUID()
     var weekOfMonth: Int
     var ucDays: [UCDay] = []
     
     public init(
+        thisMonth: Int,
         weekOfMonth: Int,
         ucDays: [UCDay]
     ) {
-        let calendar = Calendar(identifier: .gregorian)
         self.weekOfMonth = weekOfMonth
         ucDays.forEach{ day in
-            if calendar.component(.weekOfMonth, from: day.date.resetTime()) == self.weekOfMonth {
+            if getWeekOfMonth(thisMonth: thisMonth, day: day.date) == self.weekOfMonth {
                 self.ucDays.append(day)
             }
         }
     }
+
+    func getWeekOfMonth(
+        thisMonth: Int,
+        day: Date
+    ) -> Int {
+        let calendar = Calendar(identifier: .gregorian)
+        let monthOfDay = calendar.component(.month, from: day)
+        if monthOfDay < thisMonth {
+            return 1
+        } else if thisMonth < monthOfDay {
+            let firstDay = calendar.date(from: DateComponents(
+                year: calendar.component(.year, from: day),
+                month: calendar.component(.month, from: day)
+            ))! // day: 1 を指定してもよいが省略しても月初となる
+            let add = DateComponents(month: 1, day: -1) // 月初から1ヶ月進めて1日戻す
+            let lastDay = calendar.date(byAdding: add, to: firstDay)!
+            return calendar.component(.weekOfMonth, from: lastDay) + calendar.component(.weekOfMonth, from: day) - 1
+        } else {
+            return calendar.component(.weekOfMonth, from: day)
+        }
+    }
+
 }
 
 private struct UCWeekView: View {
@@ -198,8 +221,6 @@ private struct UCWeekView: View {
         ucWeek: UCWeek
     ) {
         self.ucWeek = ucWeek
-        // _ucWeek = State(initialValue: ucWeek)
-        // self._ucWeek = ucWeek
     }
 
     public var body: some View {
@@ -317,7 +338,11 @@ public struct UCalendarView: View {
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
         for week in 1...6 {
-            let ucWeek = UCWeek(weekOfMonth: week, ucDays: self.ucDays)
+            let ucWeek = UCWeek(
+                thisMonth: calendar.component(.month, from: month),
+                weekOfMonth:week,
+                ucDays: self.ucDays
+            )
             self.ucWeeks.append(ucWeek)
         }
         self.ucMonth = UCMonth(month: self.month, ucWeeks: self.ucWeeks)
