@@ -226,14 +226,7 @@ private class UCMonth {
 }
 
 private struct UCMonthView: View {
-    @State var ucMonth: UCMonth
-
-    public init(
-        ucMonth: UCMonth
-    ) {
-        // self.ucMonth = ucMonth
-        _ucMonth = State(initialValue: ucMonth)
-    }
+    @Binding var ucMonth: UCMonth
 
     public var body: some View {
         VStack {
@@ -307,7 +300,7 @@ public struct UCalendarView: View {
     }
 
     public var body: some View {
-        UCMonthView(ucMonth: self.ucMonth)
+        UCMonthView(ucMonth: self.$ucMonth)
         .onAppear() {
             let calendar = Calendar(identifier: .gregorian)
             var components = DateComponents()

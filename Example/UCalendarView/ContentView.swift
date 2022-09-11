@@ -15,7 +15,7 @@ struct ContentView: View {
     @State var ucEntries: [UCEntry] = []
     
     var body: some View {
-        UCalendarView(month: month, ucEntries: ucEntries)
+        UCalendarView(month: self.month, ucEntries: self.ucEntries)
             .onAppear() {
                 let calendar = Calendar(identifier: .gregorian)
                 var components = DateComponents()
