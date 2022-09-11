@@ -15,15 +15,15 @@ struct ContentView: View {
     @State var ucEntries: [UCEntry] = []
     
     var body: some View {
-        UCalendarView(month: self.month, ucEntries: self.ucEntries)
+        UCalendarView(month: self.month, ucEntries: self.$ucEntries)
             .onAppear() {
                 let calendar = Calendar(identifier: .gregorian)
                 var components = DateComponents()
                 components.year = calendar.component(.year, from: month)
                 components.month = calendar.component(.month, from: month)
                 for day in 1...28 {
-                    components.day = 1
-                    self.ucEntries.append(UCEntry(
+                    components.day = day
+                    let ucEntry = UCEntry(
                         date: calendar.date(from: components)!,
                         leftLabel: "Left",
                         leftLabelColor: Color.cyan,
@@ -36,7 +36,7 @@ struct ContentView: View {
                         rightLabel: "Right",
                         rightLabelColor: Color.cyan,
                         tableFontSize: 8.0)
-                    )
+                    self.ucEntries.append(ucEntry)
                 }
             }
     }

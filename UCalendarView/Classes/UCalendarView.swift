@@ -59,8 +59,6 @@ private struct UCEntryView: View {
         ucEntryViewType: UCEntryViewType,
         ucEntry: UCEntry
     ) {
-        // self.ucEntryViewType = ucEntryViewType
-        // self.ucEntry = ucEntry
         _ucEntryViewType = State(initialValue: ucEntryViewType)
         _ucEntry = State(initialValue: ucEntry)
     }
@@ -143,7 +141,7 @@ private struct UCDayView: View {
             ForEach (0..<self.displayMaxEntries, id: \.self) { index in
                 UCEntryView(
                     ucEntryViewType: .table,
-                    ucEntry: ucDay.ucEntries[index]
+                    ucEntry: self.ucDay.ucEntries[index]
                 )
             }
             ForEach (0..<(3-self.displayMaxEntries), id: \.self) { _ in
@@ -151,14 +149,14 @@ private struct UCDayView: View {
             }
         }
         .onAppear() {
-            if ucDay.ucEntries.count >= 3 {
+            if self.ucDay.ucEntries.count >= 3 {
                 self.displayMaxEntries = 3
             } else {
                 self.displayMaxEntries = ucDay.ucEntries.count
             }
             let calendar = Calendar(identifier: .gregorian)
             switch calendar.component(.weekday, from: self.ucDay.date.resetTime()) {
-            case 0:
+            case 1:
                 self.ucDayType = .sunday
                 break
             case 7:
@@ -295,8 +293,10 @@ public struct UCalendarView: View {
         month: Date,
         ucEntries: [UCEntry]
     ) {
-        self.month = month.resetTime()
-        self.ucEntries = ucEntries
+        // self.month = month.resetTime()
+        // self.ucEntries = ucEntries
+        _month = State(initialValue: month.resetTime())
+        _ucEntries = State(initialValue: ucEntries)
     }
 
     public var body: some View {
