@@ -35,7 +35,7 @@ struct ContentView: View {
                         unitColor: Color.blue,
                         rightLabel: "Right",
                         rightLabelColor: Color.cyan,
-                        tableFontSize: 8.0)
+                        tableFontSize: 10.0)
                     self.ucEntries.append(ucEntry)
                 }
             }

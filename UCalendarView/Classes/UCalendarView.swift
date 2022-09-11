@@ -13,13 +13,15 @@ public class UCEntry {
     var leftLabelColor: Color = Color.black
     var middleLabel: String = ""
     var middleLabelColor: Color = Color.black
-    var value: String = ""
+    var value: String = " "  // Space, not empty String
     var valueColor: Color = Color.black
     var unit: String = ""
     var unitColor: Color = Color.black
     var rightLabel: String = ""
     var rightLabelColor: Color = Color.black
     var tableFontSize: CGFloat = 8.0
+    
+    public init() {}
     
     public init(
         date: Date,
@@ -149,7 +151,10 @@ private struct UCDayView: View {
                 )
             }
             ForEach (0..<(3-self.displayMaxEntries), id: \.self) { _ in
-                Text("")
+                UCEntryView(
+                    ucEntryViewType: .table,
+                    ucEntry: UCEntry()
+                )
             }
         }
         .onAppear() {
