@@ -307,7 +307,7 @@ public struct UCalendarView: View {
     }
 
     public var body: some View {
-        UCMonthView(ucMonth: ucMonth)
+        UCMonthView(ucMonth: self.ucMonth)
         .onAppear() {
             let calendar = Calendar(identifier: .gregorian)
             var components = DateComponents()
