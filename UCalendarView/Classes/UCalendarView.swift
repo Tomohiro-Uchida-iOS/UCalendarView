@@ -66,6 +66,8 @@ private struct UCEntryView: View {
     public var body: some View {
         if self.ucEntryViewType == .table {
             Text(ucEntry.value)
+                .foregroundColor(ucEntry.valueColor)
+                .frame(alignment: .trailing)
                 .font(.system(size: ucEntry.tableFontSize))
         } else {
             Text(ucEntry.leftLabel)
@@ -110,15 +112,16 @@ private class UCDay {
 }
 
 private struct UCDayView: View {
-    @State var ucDay: UCDay
+    private var ucDay: UCDay
     @State var ucDayType: UCDayViewType = .weekday
     @State var displayMaxEntries: Int = 0
 
     public init(
         ucDay: UCDay
     ) {
-        // self.ucDay = ucDay
-        _ucDay = State(initialValue: ucDay)
+        self.ucDay = ucDay
+        // _ucDay = State(initialValue: ucDay)
+        // self._ucDay = ucDay
     }
     
     public var body: some View {
@@ -189,21 +192,21 @@ private class UCWeek {
 }
 
 private struct UCWeekView: View {
-    @State var ucWeek: UCWeek
+    private var ucWeek: UCWeek
 
     public init(
         ucWeek: UCWeek
     ) {
-        // self.ucWeek = ucWeek
-        _ucWeek = State(initialValue: ucWeek)
+        self.ucWeek = ucWeek
+        // _ucWeek = State(initialValue: ucWeek)
+        // self._ucWeek = ucWeek
     }
 
     public var body: some View {
         HStack {
             ForEach (self.ucWeek.ucDays, id: \.uuid) { ucDay in
                 UCDayView(
-                    ucDay: ucDay
-                )
+                    ucDay: ucDay                )
             }
         }
     }
@@ -224,7 +227,13 @@ private class UCMonth {
 }
 
 private struct UCMonthView: View {
-    @Binding var ucMonth: UCMonth
+    private var ucMonth: UCMonth
+    
+    init(
+        ucMonth: UCMonth
+    ) {
+        self.ucMonth = ucMonth
+    }
 
     public var body: some View {
         VStack {
@@ -283,10 +292,10 @@ private func ucEntriesInMonth(
 public struct UCalendarView: View {
 
     @State var month: Date = Date().resetTime()
-    @State var ucEntries: [UCEntry] = []
-    @State private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
-    @State private var ucWeeks: [UCWeek] = []
-    @State private var ucDays: [UCDay] = []
+    @Binding var ucEntries: [UCEntry]
+    private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+    private var ucWeeks: [UCWeek] = []
+    private var ucDays: [UCDay] = []
     @ObservedObject private var obsObject = ObserveModel()
 
     public init(
@@ -295,13 +304,42 @@ public struct UCalendarView: View {
     ) {
         // self.month = month.resetTime()
         // self.ucEntries = ucEntries
+        
         _month = State(initialValue: month.resetTime())
-        _ucEntries = State(initialValue: ucEntries)
+        self._ucEntries = Binding {return ucEntries} set: { newValue in
+        }
+        
+        let calendar = Calendar(identifier: .gregorian)
+        var components = DateComponents()
+        components.year = calendar.component(.year, from: self.month)
+        // 日数を求めたい次の月。13になってもOK。ドキュメントにも、月もしくは月数とある
+        components.month = calendar.component(.month, from: self.month)+1
+        // 日数を0にすることで、前の月の最後の日になる
+        components.day = 0
+        // 求めたい月の最後の日のDateオブジェクトを得る
+        let date = calendar.date(from: components)!.resetTime()
+        let dayCount = calendar.component(.day, from: date)
+        components.year = calendar.component(.year, from: self.month)
+        components.month = calendar.component(.month, from: self.month)
+        for day in 1...dayCount {
+            // 日数を0にすることで、前の月の最後の日になる
+            components.day = day
+            let ucDay = UCDay(date: calendar.date(from: components)!, ucEntries: self.ucEntries)
+            self.ucDays.append(ucDay)
+        }
+        for week in 1...6 {
+            let ucWeek = UCWeek(weekOfMonth: week, ucDays: self.ucDays)
+            self.ucWeeks.append(ucWeek)
+        }
+        self.ucMonth = UCMonth(month: self.month, ucWeeks: self.ucWeeks)
+        obsObject.count += 1
+
     }
 
     public var body: some View {
-        UCMonthView(ucMonth: self.$ucMonth)
+        UCMonthView(ucMonth: self.ucMonth)
         .onAppear() {
+            /*
             let calendar = Calendar(identifier: .gregorian)
             var components = DateComponents()
             components.year = calendar.component(.year, from: self.month)
@@ -326,6 +364,7 @@ public struct UCalendarView: View {
             }
             self.ucMonth = UCMonth(month: self.month, ucWeeks: self.ucWeeks)
             obsObject.count += 1
+             */
         }
     }
 }
