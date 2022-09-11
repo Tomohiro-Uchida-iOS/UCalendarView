@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-internal enum UCEntryViewType {
+private enum UCEntryViewType {
     case table
     case list
 }
@@ -51,7 +51,7 @@ public class UCEntry {
     
 }
 
-internal struct UCEntryView: View {
+private struct UCEntryView: View {
     @State var ucEntryViewType: UCEntryViewType = .table
     @State var ucEntry: UCEntry
         
@@ -59,8 +59,10 @@ internal struct UCEntryView: View {
         ucEntryViewType: UCEntryViewType,
         ucEntry: UCEntry
     ) {
-        self.ucEntryViewType = ucEntryViewType
-        self.ucEntry = ucEntry
+        // self.ucEntryViewType = ucEntryViewType
+        // self.ucEntry = ucEntry
+        _ucEntryViewType = State(initialValue: ucEntryViewType)
+        _ucEntry = State(initialValue: ucEntry)
     }
     
     public var body: some View {
@@ -86,14 +88,14 @@ internal struct UCEntryView: View {
     }
 }
 
-internal enum UCDayViewType {
+private enum UCDayViewType {
     case weekday
     case sunday
     case saturday
     case holiday
 }
 
-internal class UCDay {
+private class UCDay {
     var uuid = UUID()
     var date: Date
     var ucEntries: [UCEntry] = []
@@ -109,7 +111,7 @@ internal class UCDay {
     }
 }
 
-internal struct UCDayView: View {
+private struct UCDayView: View {
     @State var ucDay: UCDay
     @State var ucDayType: UCDayViewType = .weekday
     @State var displayMaxEntries: Int = 0
@@ -117,7 +119,8 @@ internal struct UCDayView: View {
     public init(
         ucDay: UCDay
     ) {
-        self.ucDay = ucDay
+        // self.ucDay = ucDay
+        _ucDay = State(initialValue: ucDay)
     }
     
     public var body: some View {
@@ -168,7 +171,7 @@ internal struct UCDayView: View {
     }
 }
 
-internal class UCWeek {
+private class UCWeek {
     var uuid = UUID()
     var weekOfMonth: Int
     var ucDays: [UCDay] = []
@@ -187,13 +190,14 @@ internal class UCWeek {
     }
 }
 
-internal struct UCWeekView: View {
+private struct UCWeekView: View {
     @State var ucWeek: UCWeek
 
     public init(
         ucWeek: UCWeek
     ) {
-        self.ucWeek = ucWeek
+        // self.ucWeek = ucWeek
+        _ucWeek = State(initialValue: ucWeek)
     }
 
     public var body: some View {
@@ -208,7 +212,7 @@ internal struct UCWeekView: View {
 }
 
 
-internal class UCMonth {
+private class UCMonth {
     var month: Date
     var ucWeeks: [UCWeek] = []
     
@@ -221,13 +225,14 @@ internal class UCMonth {
     }
 }
 
-internal struct UCMonthView: View {
+private struct UCMonthView: View {
     @State var ucMonth: UCMonth
 
     public init(
         ucMonth: UCMonth
     ) {
-        self.ucMonth = ucMonth
+        // self.ucMonth = ucMonth
+        _ucMonth = State(initialValue: ucMonth)
     }
 
     public var body: some View {
@@ -241,7 +246,7 @@ internal struct UCMonthView: View {
     }
 }
 
-internal func startDateInMonth(
+private func startDateInMonth(
     month: Date
 ) ->  Date {
     let calendar = Calendar(identifier: .gregorian)
@@ -259,7 +264,7 @@ internal func startDateInMonth(
     return startDate.resetTime()
 }
 
-internal func endDateInMonth(
+private func endDateInMonth(
     month: Date
 ) ->  Date {
     let calendar = Calendar(identifier: .gregorian)
@@ -276,7 +281,7 @@ internal func endDateInMonth(
     return endDate
 }
 
-internal func ucEntriesInMonth(
+private func ucEntriesInMonth(
     month: Date,
     inUcEntries: [UCEntry]
 ) -> [UCEntry] {
@@ -287,11 +292,11 @@ internal func ucEntriesInMonth(
 public struct UCalendarView: View {
 
     @State var month: Date = Date().resetTime()
-    @State var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
-    @State var ucWeeks: [UCWeek] = []
-    @State var ucDays: [UCDay] = []
     @State var ucEntries: [UCEntry] = []
-    @ObservedObject var obsObject = ObserveModel()
+    @State private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+    @State private var ucWeeks: [UCWeek] = []
+    @State private var ucDays: [UCDay] = []
+    @ObservedObject private var obsObject = ObserveModel()
 
     public init(
         month: Date,
@@ -300,8 +305,6 @@ public struct UCalendarView: View {
         self.month = month.resetTime()
         self.ucEntries = ucEntries
     }
-    
-
 
     public var body: some View {
         UCMonthView(ucMonth: ucMonth)
