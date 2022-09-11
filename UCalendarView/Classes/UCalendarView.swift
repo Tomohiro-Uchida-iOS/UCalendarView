@@ -120,8 +120,6 @@ private struct UCDayView: View {
         ucDay: UCDay
     ) {
         self.ucDay = ucDay
-        // _ucDay = State(initialValue: ucDay)
-        // self._ucDay = ucDay
     }
     
     public var body: some View {
@@ -132,12 +130,15 @@ private struct UCDayView: View {
                 case .sunday:
                     Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
                         .foregroundColor(Color.red)
+                        .font(.system(size: 11))
                 case .saturday:
                     Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
                         .foregroundColor(Color.blue)
+                        .font(.system(size: 11))
                 default:
                     Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
                         .foregroundColor(Color.black)
+                        .font(.system(size: 11))
                 }
                 Spacer()
             }
@@ -185,7 +186,8 @@ private class UCWeek {
     ) {
         self.weekOfMonth = weekOfMonth
         ucDays.forEach{ day in
-            if getWeekOfMonth(thisMonth: thisMonth, day: day.date) == self.weekOfMonth {
+            let weekOfMonth = getWeekOfMonth(thisMonth: thisMonth, day: day.date)
+            if weekOfMonth == self.weekOfMonth {
                 self.ucDays.append(day)
             }
         }
@@ -200,13 +202,18 @@ private class UCWeek {
         if monthOfDay < thisMonth {
             return 1
         } else if thisMonth < monthOfDay {
-            let firstDay = calendar.date(from: DateComponents(
-                year: calendar.component(.year, from: day),
-                month: calendar.component(.month, from: day)
-            ))! // day: 1 を指定してもよいが省略しても月初となる
+            let minus = DateComponents(month: -1)
+            let previousMonth = calendar.date(byAdding: minus, to: day)!
+            var day1st = DateComponents()
+            day1st.year = calendar.component(.year, from: previousMonth)
+            day1st.month = calendar.component(.month, from: previousMonth)
+            day1st.day = 1
+            let firstDay = calendar.date(from: day1st)!
             let add = DateComponents(month: 1, day: -1) // 月初から1ヶ月進めて1日戻す
             let lastDay = calendar.date(byAdding: add, to: firstDay)!
-            return calendar.component(.weekOfMonth, from: lastDay) + calendar.component(.weekOfMonth, from: day) - 1
+            let weekOfLastDay = calendar.component(.weekOfMonth, from: lastDay)
+            let weekOfDay = calendar.component(.weekOfMonth, from: day)
+            return weekOfLastDay + weekOfDay - 1
         } else {
             return calendar.component(.weekOfMonth, from: day)
         }
