@@ -310,22 +310,11 @@ public struct UCalendarView: View {
         }
         
         let calendar = Calendar(identifier: .gregorian)
-        var components = DateComponents()
-        components.year = calendar.component(.year, from: self.month)
-        // 日数を求めたい次の月。13になってもOK。ドキュメントにも、月もしくは月数とある
-        components.month = calendar.component(.month, from: self.month)+1
-        // 日数を0にすることで、前の月の最後の日になる
-        components.day = 0
-        // 求めたい月の最後の日のDateオブジェクトを得る
-        let date = calendar.date(from: components)!.resetTime()
-        let dayCount = calendar.component(.day, from: date)
-        components.year = calendar.component(.year, from: self.month)
-        components.month = calendar.component(.month, from: self.month)
-        for day in 1...dayCount {
-            // 日数を0にすることで、前の月の最後の日になる
-            components.day = day
-            let ucDay = UCDay(date: calendar.date(from: components)!, ucEntries: self.ucEntries)
+        var pointedDate = startDateInMonth(month: month.resetTime())
+        for _ in 1...42 {
+            let ucDay = UCDay(date: pointedDate, ucEntries: self.ucEntries)
             self.ucDays.append(ucDay)
+            pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
         for week in 1...6 {
             let ucWeek = UCWeek(weekOfMonth: week, ucDays: self.ucDays)
