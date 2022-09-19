@@ -11,7 +11,7 @@ import UCalendarView
 
 struct ContentView: View {
     
-    @State var month = Date().resetTime()
+    @State var month = Date()
     @State var ucEntries: [UCEntry] = []
     
     var body: some View {
