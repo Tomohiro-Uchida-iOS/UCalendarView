@@ -381,7 +381,7 @@ private func ucEntriesInMonth(
 
 public struct UCalendarView: View {
 
-    @State var month: Date = Date().resetTime()
+    @State var month: Date
     @Binding var ucEntries: [UCEntry]
     private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
     private var ucWeeks: [UCWeek] = []
@@ -395,7 +395,7 @@ public struct UCalendarView: View {
         ucEntries: [UCEntry],
         maxLinesInDayTable: Int
     ) {
-        _month = State(initialValue: month.resetTime())
+        self._month = State(initialValue: month.resetTime())
         self._ucEntries = Binding {return ucEntries} set: { newValue in
         }
         self.maxLinesInDayTable = maxLinesInDayTable
