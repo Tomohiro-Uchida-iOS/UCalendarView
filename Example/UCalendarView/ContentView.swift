@@ -16,7 +16,6 @@ struct ContentView: View {
     
     var body: some View {
         UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 5)
-            .environmentObject(EntryList())
             .onAppear() {
                 let calendar = Calendar(identifier: .gregorian)
                 var components = DateComponents()

@@ -379,10 +379,10 @@ private func ucEntriesInMonth(
     return outUcEntries
 }
 
-public struct UCalendarView: View {
+private struct UCalendarViewImpl: View {
 
-    @State var month: Date
-    @Binding var ucEntries: [UCEntry]
+    var month: Date
+    var ucEntries: [UCEntry]
     private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
     private var ucWeeks: [UCWeek] = []
     private var ucDays: [UCDay] = []
@@ -395,9 +395,8 @@ public struct UCalendarView: View {
         ucEntries: [UCEntry],
         maxLinesInDayTable: Int
     ) {
-        self._month = State(initialValue: month.resetTime())
-        self._ucEntries = Binding {return ucEntries} set: { newValue in
-        }
+        self.month = month.resetTime()
+        self.ucEntries = ucEntries
         self.maxLinesInDayTable = maxLinesInDayTable
         
         let calendar = Calendar(identifier: .gregorian)
@@ -435,3 +434,27 @@ public struct UCalendarView: View {
         }
     }
 }
+
+public struct UCalendarView: View {
+
+    var month: Date
+    var ucEntries: [UCEntry]
+    private var maxLinesInDayTable: Int
+    @EnvironmentObject var detailedEntryList: EntryList
+
+    public init(
+        month: Date,
+        ucEntries: [UCEntry],
+        maxLinesInDayTable: Int
+    ) {
+        self.month = month
+        self.ucEntries = ucEntries
+        self.maxLinesInDayTable = maxLinesInDayTable
+    }
+
+    public var body: some View {
+        UCalendarViewImpl(month: month, ucEntries: ucEntries, maxLinesInDayTable: maxLinesInDayTable)
+            .environmentObject(EntryList())
+    }
+}
+
