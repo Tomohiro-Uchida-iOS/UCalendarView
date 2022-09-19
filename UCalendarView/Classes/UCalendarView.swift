@@ -1,7 +1,17 @@
 import Foundation
 import SwiftUI
 
-private enum UCEntryViewType {
+class ObserveModel: ObservableObject{
+    @Published var count = 0
+}
+
+public class EntryList: ObservableObject {
+    @Published var entryList: [UCEntryView] = []
+    
+    public init() {}
+}
+
+enum UCEntryViewType {
     case table
     case list
 }
@@ -19,7 +29,17 @@ public class UCEntry {
     var unitColor: Color = Color.black
     var rightLabel: String = ""
     var rightLabelColor: Color = Color.black
-    var tableFontSize: CGFloat = 8.0
+    var tableFontSize: CGFloat = 10.0
+    var listFontSize: CGFloat = 12.0
+
+    static func == (lhs: UCEntry, rhs: UCEntry) -> Bool {
+        return lhs.date == rhs.date &&
+        lhs.leftLabel == rhs.leftLabel &&
+        lhs.middleLabel == rhs.middleLabel &&
+        lhs.value == rhs.value &&
+        lhs.unit == rhs.unit &&
+        lhs.rightLabel == rhs.rightLabel
+    }
     
     public init() {}
     
@@ -35,7 +55,8 @@ public class UCEntry {
         unitColor: Color,
         rightLabel: String,
         rightLabelColor: Color,
-        tableFontSize: CGFloat
+        tableFontSize: CGFloat,
+        listFontSize: CGFloat
     ) {
         self.date = date
         self.leftLabel = leftLabel
@@ -47,17 +68,23 @@ public class UCEntry {
         self.unit = unit
         self.unitColor = unitColor
         self.rightLabel = rightLabel
-        self.rightLabelColor = Color.black
+        self.rightLabelColor = rightLabelColor
         self.tableFontSize = tableFontSize
+        self.listFontSize = listFontSize
     }
     
 }
 
-fileprivate struct UCEntryView: View {
+struct UCEntryView: View, Equatable {
+        
     var uuid = UUID()
     @State var ucEntryViewType: UCEntryViewType = .table
     @State var ucEntry: UCEntry
-        
+
+    static func == (lhs: UCEntryView, rhs: UCEntryView) -> Bool {
+        return lhs.ucEntry == rhs.ucEntry
+    }
+
     public init(
         ucEntryViewType: UCEntryViewType,
         ucEntry: UCEntry
@@ -73,20 +100,30 @@ fileprivate struct UCEntryView: View {
                 .frame(alignment: .trailing)
                 .font(.system(size: ucEntry.tableFontSize))
         } else {
-            Text(ucEntry.leftLabel)
-                .foregroundColor(ucEntry.leftLabelColor)
-            Spacer()
-            Text(ucEntry.middleLabel)
-                .foregroundColor(ucEntry.middleLabelColor)
-            Spacer()
-            Text(ucEntry.value)
-                .foregroundColor(ucEntry.valueColor)
-                .frame(alignment: .trailing)
-            Text(ucEntry.unit)
-                .foregroundColor(ucEntry.unitColor)
-                .frame(alignment: .leading)
-            Text(ucEntry.rightLabel)
-                .foregroundColor(ucEntry.rightLabelColor)
+            HStack {
+                Text(ucEntry.leftLabel)
+                    .foregroundColor(ucEntry.leftLabelColor)
+                    .frame(alignment: .leading)
+                    .font(.system(size: ucEntry.listFontSize))
+                Spacer()
+                Text(ucEntry.middleLabel)
+                    .foregroundColor(ucEntry.middleLabelColor)
+                    .frame(alignment: .center)
+                    .font(.system(size: ucEntry.listFontSize))
+                Spacer()
+                Text(ucEntry.value)
+                    .foregroundColor(ucEntry.valueColor)
+                    .frame(alignment: .trailing)
+                    .font(.system(size: ucEntry.listFontSize))
+                Text(ucEntry.unit)
+                    .foregroundColor(ucEntry.unitColor)
+                    .frame(alignment: .leading)
+                    .font(.system(size: ucEntry.listFontSize))
+                Text(ucEntry.rightLabel)
+                    .foregroundColor(ucEntry.rightLabelColor)
+                    .frame(alignment: .trailing)
+                    .font(.system(size: ucEntry.listFontSize))
+            }
         }
     }
 }
@@ -117,16 +154,16 @@ private class UCDay {
 private struct UCDayView: View {
     private var ucDay: UCDay
     @State var ucDayType: UCDayViewType = .weekday
-    @State var displayMaxEntries: Int = 0
-    @State private var detailedEntryList: Binding<[UCEntryView]>
-    @State private var detailedEntryListTemp: [UCEntryView]
+    var maxLinesInDayTable: Int
+    @State var maxEntriesInTable: Int = 0
+    @EnvironmentObject var detailedEntryList: EntryList
 
     public init(
         ucDay: UCDay,
-        detailedEntryList: Binding<[UCEntryView]>
+        maxLinesInDayTable: Int
     ) {
         self.ucDay = ucDay
-        self.detailedEntryList = detailedEntryList
+        self.maxLinesInDayTable = maxLinesInDayTable
     }
         
     public var body: some View {
@@ -149,13 +186,13 @@ private struct UCDayView: View {
                 }
                 Spacer()
             }
-            ForEach (0..<self.displayMaxEntries, id: \.self) { index in
+            ForEach (0..<self.maxEntriesInTable, id: \.self) { index in
                 UCEntryView(
                     ucEntryViewType: .table,
                     ucEntry: self.ucDay.ucEntries[index]
                 )
             }
-            ForEach (0..<(3-self.displayMaxEntries), id: \.self) { _ in
+            ForEach (0..<(self.maxLinesInDayTable-self.maxEntriesInTable), id: \.self) { _ in
                 UCEntryView(
                     ucEntryViewType: .table,
                     ucEntry: UCEntry()
@@ -163,10 +200,10 @@ private struct UCDayView: View {
             }
         }
         .onAppear() {
-            if self.ucDay.ucEntries.count >= 3 {
-                self.displayMaxEntries = 3
+            if self.ucDay.ucEntries.count >= self.maxLinesInDayTable {
+                self.maxEntriesInTable = self.maxLinesInDayTable
             } else {
-                self.displayMaxEntries = ucDay.ucEntries.count
+                self.maxEntriesInTable = ucDay.ucEntries.count
             }
             let calendar = Calendar(identifier: .gregorian)
             switch calendar.component(.weekday, from: self.ucDay.date.resetTime()) {
@@ -181,10 +218,10 @@ private struct UCDayView: View {
             }
         }
         .onTapGesture {
+            detailedEntryList.entryList.removeAll()
             ucDay.ucEntries.forEach{ucEntry in
-                self.detailedEntryListTemp.append(UCEntryView(ucEntryViewType: .list, ucEntry: ucEntry))
+                detailedEntryList.entryList.append(UCEntryView(ucEntryViewType: .list, ucEntry: ucEntry))
             }
-            self.detailedEntryList = Binding(detailedEntryListTemp)
         }
     }
 }
@@ -239,14 +276,14 @@ private class UCWeek {
 
 private struct UCWeekView: View {
     private var ucWeek: UCWeek
-    @State var detailedEntryList: Binding<[UCEntryView]>
+    private var maxLinesInDayTable: Int
 
     public init(
         ucWeek: UCWeek,
-        detailedEntryList: Binding<[UCEntryView]>
+        maxLinesInDayTable: Int
     ) {
         self.ucWeek = ucWeek
-        self.detailedEntryList = detailedEntryList
+        self.maxLinesInDayTable = maxLinesInDayTable
     }
 
     public var body: some View {
@@ -254,7 +291,7 @@ private struct UCWeekView: View {
             ForEach (self.ucWeek.ucDays, id: \.uuid) { ucDay in
                 UCDayView(
                     ucDay: ucDay,
-                    detailedEntryList: detailedEntryList
+                    maxLinesInDayTable: maxLinesInDayTable
                 )
             }
         }
@@ -277,14 +314,14 @@ private class UCMonth {
 
 private struct UCMonthView: View {
     private var ucMonth: UCMonth
-    @State var detailedEntryList: Binding<[UCEntryView]>
+    private var maxLinesInDayTable: Int
 
     init(
         ucMonth: UCMonth,
-        detailedEntryList: Binding<[UCEntryView]>
+        maxLinesInDayTable: Int
     ) {
         self.ucMonth = ucMonth
-        self.detailedEntryList = detailedEntryList
+        self.maxLinesInDayTable = maxLinesInDayTable
     }
 
     public var body: some View {
@@ -292,7 +329,7 @@ private struct UCMonthView: View {
             ForEach (self.ucMonth.ucWeeks, id: \.uuid) { ucWeek in
                 UCWeekView(
                     ucWeek: ucWeek,
-                    detailedEntryList: detailedEntryList
+                    maxLinesInDayTable: maxLinesInDayTable
                 )
             }
         }
@@ -349,16 +386,19 @@ public struct UCalendarView: View {
     private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
     private var ucWeeks: [UCWeek] = []
     private var ucDays: [UCDay] = []
-    @State fileprivate var detailedEntryList: [UCEntryView] = []
+    private var maxLinesInDayTable: Int
     @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var detailedEntryList: EntryList
 
     public init(
         month: Date,
-        ucEntries: [UCEntry]
+        ucEntries: [UCEntry],
+        maxLinesInDayTable: Int
     ) {
         _month = State(initialValue: month.resetTime())
         self._ucEntries = Binding {return ucEntries} set: { newValue in
         }
+        self.maxLinesInDayTable = maxLinesInDayTable
         
         let calendar = Calendar(identifier: .gregorian)
         var pointedDate = startDateInMonth(month: month.resetTime())
@@ -376,22 +416,22 @@ public struct UCalendarView: View {
             self.ucWeeks.append(ucWeek)
         }
         self.ucMonth = UCMonth(month: self.month, ucWeeks: self.ucWeeks)
-        obsObject.count += 1
-
     }
 
     public var body: some View {
-        UCMonthView(ucMonth: self.ucMonth, detailedEntryList: $detailedEntryList)
-        ZStack {
+        UCMonthView(ucMonth: self.ucMonth, maxLinesInDayTable: maxLinesInDayTable)
+        VStack {
             Rectangle()
                 .fill(Color(uiColor: UIColor.rgba(red: 0xF0, green: 0xF0, blue: 0xF0, alpha: 0xFF)))
                 .frame(height: 25)
             List{
-                ForEach(detailedEntryList, id: \.uuid) { ucEntryView in
+                ForEach(detailedEntryList.entryList, id: \.uuid) { ucEntryView in
                     ucEntryView
                 }
             }
-            
+            .onChange(of: detailedEntryList.entryList, perform: { _ in
+                obsObject.count += 1
+            })
         }
     }
 }

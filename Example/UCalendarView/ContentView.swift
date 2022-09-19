@@ -15,7 +15,8 @@ struct ContentView: View {
     @State var ucEntries: [UCEntry] = []
     
     var body: some View {
-        UCalendarView(month: self.month, ucEntries: self.ucEntries)
+        UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 5)
+            .environmentObject(EntryList())
             .onAppear() {
                 let calendar = Calendar(identifier: .gregorian)
                 var components = DateComponents()
@@ -35,12 +36,13 @@ struct ContentView: View {
                         unitColor: Color.blue,
                         rightLabel: "Right",
                         rightLabelColor: Color.cyan,
-                        tableFontSize: 10.0)
+                        tableFontSize: 10.0,
+                        listFontSize: 12.0
+                    )
                     self.ucEntries.append(ucEntry)
                 }
             }
     }
-    
 }
 
 struct ContentView_Previews: PreviewProvider {
