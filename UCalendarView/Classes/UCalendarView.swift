@@ -176,9 +176,12 @@ private class UCDay {
         ucEntries: [UCEntry]
     ) {
         self.date = date
+        /*
         self.ucEntries = ucEntries.filter {
             $0.date == self.date
         }
+         */
+        self.ucEntries = ucEntries
     }
 }
 
@@ -422,11 +425,11 @@ private func endDateInMonth(
     return endDate
 }
 
-private func ucEntriesInMonth(
-    month: Date,
+private func ucEntriesInDay(
+    date: Date,
     inUcEntries: [UCEntry]
 ) -> [UCEntry] {
-    let outUcEntries =  inUcEntries.filter{ startDateInMonth(month: month) <= $0.date && $0.date <= endDateInMonth(month: month) }
+    let outUcEntries =  inUcEntries.filter{ $0.date == date }
     return outUcEntries
 }
 
@@ -488,7 +491,7 @@ private struct UCalendarViewImpl: View {
         var pointedDate = startDateInMonth(month: month)
         ucDays.removeAll()
         for _ in 1...42 {
-            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInMonth(month: month, inUcEntries: self.ucEntries))
+            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInDay(date: pointedDate, inUcEntries: self.ucEntries))
             ucDays.append(ucDay)
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
@@ -507,12 +510,12 @@ private struct UCalendarViewImpl: View {
     func reEntry(month: Date) {
         var ucWeeks: [UCWeek] = []
         var ucDays: [UCDay] = []
-
+       
         let calendar = Calendar(identifier: .gregorian)
         var pointedDate = startDateInMonth(month: month)
         ucDays.removeAll()
         for _ in 1...42 {
-            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInMonth(month: month, inUcEntries: self.ucEntries))
+            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInDay(date: pointedDate, inUcEntries: self.ucEntries))
             ucDays.append(ucDay)
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
