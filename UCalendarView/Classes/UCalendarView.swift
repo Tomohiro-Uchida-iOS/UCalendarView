@@ -40,6 +40,7 @@ public class UCEntry {
     var rightLabelColor: Color = Color.black
     var tableFontSize: CGFloat = 10.0
     var listFontSize: CGFloat = 12.0
+    var tableAlignment: Alignment = .leading
 
     static func == (lhs: UCEntry, rhs: UCEntry) -> Bool {
         return lhs.date == rhs.date &&
@@ -65,7 +66,8 @@ public class UCEntry {
         rightLabel: String,
         rightLabelColor: Color,
         tableFontSize: CGFloat,
-        listFontSize: CGFloat
+        listFontSize: CGFloat,
+        tableAlignment: Alignment
     ) {
         self.date = date
         self.leftLabel = leftLabel
@@ -80,6 +82,7 @@ public class UCEntry {
         self.rightLabelColor = rightLabelColor
         self.tableFontSize = tableFontSize
         self.listFontSize = listFontSize
+        self.tableAlignment = tableAlignment
     }
     
 }
@@ -106,10 +109,27 @@ struct UCEntryView: View, Equatable {
     
     public var body: some View {
         if self.ucEntryViewType == .table {
-            Text(ucEntry.value)
-                .foregroundColor(ucEntry.valueColor)
-                .frame(alignment: .trailing)
-                .font(.system(size: ucEntry.tableFontSize))
+            HStack {
+                switch ucEntry.tableAlignment {
+                case .center:
+                    Text(ucEntry.value)
+                        .foregroundColor(ucEntry.valueColor)
+                        .frame(alignment: .trailing)
+                        .font(.system(size: ucEntry.tableFontSize))
+                case.trailing:
+                    Spacer()
+                    Text(ucEntry.value)
+                        .foregroundColor(ucEntry.valueColor)
+                        .frame(alignment: .trailing)
+                        .font(.system(size: ucEntry.tableFontSize))
+                default:
+                    Text(ucEntry.value)
+                        .foregroundColor(ucEntry.valueColor)
+                        .frame(alignment: .trailing)
+                        .font(.system(size: ucEntry.tableFontSize))
+                    Spacer()
+                }
+            }
         } else {
             HStack {
                 Text(ucEntry.leftLabel)
@@ -437,20 +457,20 @@ private struct DateBelt: View {
     
 }
 
+private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+
 private struct UCalendarViewImpl: View {
 
     var month: Date
     var ucEntries: [UCEntry]
-    @State private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
-    @State private var ucWeeks: [UCWeek] = []
-    @State private var ucDays: [UCDay] = []
+    // @State private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
     private var maxLinesInDayTable: Int
     private var endDate: Date?
     @ObservedObject private var obsObject = ObserveModel()
     @EnvironmentObject var detailedEntryList: EntryList
     @EnvironmentObject var calendarDate: CalendarDate
 
-    public init(
+    init(
         month: Date,
         ucEntries: [UCEntry],
         maxLinesInDayTable: Int,
@@ -460,27 +480,52 @@ private struct UCalendarViewImpl: View {
         self.ucEntries = ucEntries
         self.maxLinesInDayTable = maxLinesInDayTable
         self.endDate = endDate
-    }
 
-    func reEntry(month: Date) {
+        var ucWeeks: [UCWeek] = []
+        var ucDays: [UCDay] = []
+
         let calendar = Calendar(identifier: .gregorian)
         var pointedDate = startDateInMonth(month: month)
-        self.ucDays.removeAll()
+        ucDays.removeAll()
         for _ in 1...42 {
             let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInMonth(month: month, inUcEntries: self.ucEntries))
-            self.ucDays.append(ucDay)
+            ucDays.append(ucDay)
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
-        self.ucWeeks.removeAll()
+        ucWeeks.removeAll()
         for week in 1...6 {
             let ucWeek = UCWeek(
                 thisMonth: calendar.component(.month, from: month),
                 weekOfMonth:week,
-                ucDays: self.ucDays
+                ucDays: ucDays
             )
-            self.ucWeeks.append(ucWeek)
+            ucWeeks.append(ucWeek)
         }
-        self.ucMonth = UCMonth(month: month, ucWeeks: self.ucWeeks)
+        ucMonth = UCMonth(month: month, ucWeeks: ucWeeks)
+    }
+
+    func reEntry(month: Date) {
+        var ucWeeks: [UCWeek] = []
+        var ucDays: [UCDay] = []
+
+        let calendar = Calendar(identifier: .gregorian)
+        var pointedDate = startDateInMonth(month: month)
+        ucDays.removeAll()
+        for _ in 1...42 {
+            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInMonth(month: month, inUcEntries: self.ucEntries))
+            ucDays.append(ucDay)
+            pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
+        }
+        ucWeeks.removeAll()
+        for week in 1...6 {
+            let ucWeek = UCWeek(
+                thisMonth: calendar.component(.month, from: month),
+                weekOfMonth:week,
+                ucDays: ucDays
+            )
+            ucWeeks.append(ucWeek)
+        }
+        ucMonth = UCMonth(month: month, ucWeeks: ucWeeks)
     }
     
     public var body: some View {
@@ -567,7 +612,7 @@ private struct UCalendarViewImpl: View {
                     .padding(.trailing)
                 }
             }
-            UCMonthView(ucMonth: self.ucMonth, maxLinesInDayTable: maxLinesInDayTable)
+            UCMonthView(ucMonth: ucMonth, maxLinesInDayTable: maxLinesInDayTable)
             VStack {
                 DateBelt()
                 List{
