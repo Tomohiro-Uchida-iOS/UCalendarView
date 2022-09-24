@@ -5,10 +5,10 @@
   Created by Tomohiro Uchida on 2022/09/04.
 */
 
-"LabelSunday" = "日"
-"LabelMonday" = "月"
-"LabelTuesDay" = "火"
-"LabelWednesday" = "水"
-"LabelThursday" = "木"
-"LabelFriday" = "金"
-"LabelSaturday" = "土"
+"LabelSunday" = "日";
+"LabelMonday" = "月";
+"LabelTuesday" = "火";
+"LabelWednesday" = "水";
+"LabelThursday" = "木";
+"LabelFriday" = "金";
+"LabelSaturday" = "土";

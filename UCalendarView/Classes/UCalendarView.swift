@@ -11,6 +11,15 @@ public class EntryList: ObservableObject {
     public init() {}
 }
 
+public class BeltDate: ObservableObject {
+    @Published var date: Date = Date().resetTime()
+}
+
+public class CalendarDate: ObservableObject {
+    @Published var date: Date = Date().resetTime()
+}
+
+
 enum UCEntryViewType {
     case table
     case list
@@ -80,6 +89,8 @@ struct UCEntryView: View, Equatable {
     var uuid = UUID()
     @State var ucEntryViewType: UCEntryViewType = .table
     @State var ucEntry: UCEntry
+    @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var calendarDate: CalendarDate
 
     static func == (lhs: UCEntryView, rhs: UCEntryView) -> Bool {
         return lhs.ucEntry == rhs.ucEntry
@@ -156,7 +167,10 @@ private struct UCDayView: View {
     @State var ucDayType: UCDayViewType = .weekday
     var maxLinesInDayTable: Int
     @State var maxEntriesInTable: Int = 0
+    @ObservedObject private var obsObject = ObserveModel()
     @EnvironmentObject var detailedEntryList: EntryList
+    @EnvironmentObject var beltDate: BeltDate
+    @EnvironmentObject var calendarDate: CalendarDate
 
     public init(
         ucDay: UCDay,
@@ -199,6 +213,7 @@ private struct UCDayView: View {
                 )
             }
         }
+        .border(Color(UIColor.rgba(red: 0xE0, green: 0xE0, blue: 0xE0, alpha: 0xFF)), width: 1)
         .onAppear() {
             if self.ucDay.ucEntries.count >= self.maxLinesInDayTable {
                 self.maxEntriesInTable = self.maxLinesInDayTable
@@ -218,6 +233,7 @@ private struct UCDayView: View {
             }
         }
         .onTapGesture {
+            beltDate.date = ucDay.date
             detailedEntryList.entryList.removeAll()
             ucDay.ucEntries.forEach{ucEntry in
                 detailedEntryList.entryList.append(UCEntryView(ucEntryViewType: .list, ucEntry: ucEntry))
@@ -271,12 +287,13 @@ private class UCWeek {
             return calendar.component(.weekOfMonth, from: day)
         }
     }
-
 }
 
 private struct UCWeekView: View {
     private var ucWeek: UCWeek
     private var maxLinesInDayTable: Int
+    @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var calendarDate: CalendarDate
 
     public init(
         ucWeek: UCWeek,
@@ -315,6 +332,8 @@ private class UCMonth {
 private struct UCMonthView: View {
     private var ucMonth: UCMonth
     private var maxLinesInDayTable: Int
+    @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var calendarDate: CalendarDate
 
     init(
         ucMonth: UCMonth,
@@ -326,6 +345,22 @@ private struct UCMonthView: View {
 
     public var body: some View {
         VStack {
+            HStack {
+                Text("LabelSunday")
+                    .frame(alignment: .center)
+                Text("LabelMonday")
+                    .frame(alignment: .center)
+                Text("LabelTuesday")
+                    .frame(alignment: .center)
+                Text("LabelWednesday")
+                    .frame(alignment: .center)
+                Text("LabelThursday")
+                    .frame(alignment: .center)
+                Text("LabelFriday")
+                    .frame(alignment: .center)
+                Text("LabelSaturday")
+                    .frame(alignment: .center)
+            }
             ForEach (self.ucMonth.ucWeeks, id: \.uuid) { ucWeek in
                 UCWeekView(
                     ucWeek: ucWeek,
@@ -359,15 +394,11 @@ private func endDateInMonth(
 ) ->  Date {
     let calendar = Calendar(identifier: .gregorian)
     let startDate = startDateInMonth(month: month).resetTime()
-    var endDate = calendar.date(
+    let endDate = calendar.date(
         byAdding: .day,
-        value: calendar.component(.day, from: startDate.resetTime())-1,
+        value: 7*6-1,
         to: startDate
     )!.resetTime()
-    endDate = calendar.date(
-        byAdding: .day,
-        value: 7-calendar.component(.weekday, from: endDate.resetTime()),
-        to: endDate)!
     return endDate
 }
 
@@ -379,33 +410,68 @@ private func ucEntriesInMonth(
     return outUcEntries
 }
 
+private struct DateBelt: View {
+    @State var dateFormatter = DateFormatter()
+    @EnvironmentObject var beltDate: BeltDate
+    
+    public var body: some View {
+        
+        ZStack {
+            Rectangle()
+                .fill(Color(uiColor: UIColor.rgba(red: 0xF0, green: 0xF0, blue: 0xF0, alpha: 0xFF)))
+                .frame(height: 25)
+            HStack {
+                Text(dateFormatter.string(from: beltDate.date))
+                    .frame(alignment: .leading)
+                Spacer()
+            }
+            Button("+", action: {
+            })
+        }
+        .onAppear() {
+            dateFormatter.locale = Locale(identifier: "ja_JP")
+            dateFormatter.dateStyle = .medium
+            dateFormatter.dateFormat = "yyyy-M-d"
+        }
+    }
+    
+}
+
 private struct UCalendarViewImpl: View {
 
     var month: Date
     var ucEntries: [UCEntry]
-    private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
-    private var ucWeeks: [UCWeek] = []
-    private var ucDays: [UCDay] = []
+    @State private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+    @State private var ucWeeks: [UCWeek] = []
+    @State private var ucDays: [UCDay] = []
     private var maxLinesInDayTable: Int
+    private var endDate: Date?
     @ObservedObject private var obsObject = ObserveModel()
     @EnvironmentObject var detailedEntryList: EntryList
+    @EnvironmentObject var calendarDate: CalendarDate
 
     public init(
         month: Date,
         ucEntries: [UCEntry],
-        maxLinesInDayTable: Int
+        maxLinesInDayTable: Int,
+        endDate: Date?
     ) {
         self.month = month.resetTime()
         self.ucEntries = ucEntries
         self.maxLinesInDayTable = maxLinesInDayTable
-        
+        self.endDate = endDate
+    }
+
+    func reEntry(month: Date) {
         let calendar = Calendar(identifier: .gregorian)
-        var pointedDate = startDateInMonth(month: month.resetTime())
+        var pointedDate = startDateInMonth(month: month)
+        self.ucDays.removeAll()
         for _ in 1...42 {
-            let ucDay = UCDay(date: pointedDate, ucEntries: self.ucEntries)
+            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInMonth(month: month, inUcEntries: self.ucEntries))
             self.ucDays.append(ucDay)
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
+        self.ucWeeks.removeAll()
         for week in 1...6 {
             let ucWeek = UCWeek(
                 thisMonth: calendar.component(.month, from: month),
@@ -414,23 +480,114 @@ private struct UCalendarViewImpl: View {
             )
             self.ucWeeks.append(ucWeek)
         }
-        self.ucMonth = UCMonth(month: self.month, ucWeeks: self.ucWeeks)
+        self.ucMonth = UCMonth(month: month, ucWeeks: self.ucWeeks)
     }
-
+    
     public var body: some View {
-        UCMonthView(ucMonth: self.ucMonth, maxLinesInDayTable: maxLinesInDayTable)
         VStack {
-            Rectangle()
-                .fill(Color(uiColor: UIColor.rgba(red: 0xF0, green: 0xF0, blue: 0xF0, alpha: 0xFF)))
-                .frame(height: 25)
-            List{
-                ForEach(detailedEntryList.entryList, id: \.uuid) { ucEntryView in
-                    ucEntryView
+            ZStack {
+                HStack {
+                    Spacer()
+                    Spacer()
+                    Button(
+                        action: {
+                            calendarDate.date = Calendar.current.date(byAdding: .month, value: -1, to: calendarDate.date.resetTime())!
+                            ucMonth.month = calendarDate.date
+                            reEntry(month: calendarDate.date)
+                            obsObject.count += 1
+                        },
+                        label: {
+                            Label("", systemImage: "chevron.left")
+                        }
+                    )
+                    Spacer()
+                    if self.endDate != nil {
+                        DatePicker("",
+                                   selection: $calendarDate.date,
+                                   in: ...self.endDate!,
+                                   displayedComponents: .date)
+                        .onChange(of: calendarDate.date, perform: { date in
+                            calendarDate.date = date.resetTime()
+                            ucMonth.month = calendarDate.date
+                            reEntry(month: calendarDate.date)
+                            obsObject.count += 1
+                        })
+                        .environment(\.locale, Locale(identifier: "ja_JP"))
+                        .labelsHidden()
+                    } else {
+                        DatePicker("",
+                                   selection: $calendarDate.date,
+                                   displayedComponents: .date)
+                        .onChange(of: calendarDate.date, perform: { date in
+                            calendarDate.date = date.resetTime()
+                            ucMonth.month = calendarDate.date
+                            reEntry(month: calendarDate.date)
+                            obsObject.count += 1
+                        })
+                        .environment(\.locale, Locale(identifier: "ja_JP"))
+                        .labelsHidden()
+                    }
+                    Spacer()
+                    Button(
+                        action: {
+                            let tempDate = Calendar.current.date(byAdding: .month, value: 1, to: calendarDate.date.resetTime())!
+                            if self.endDate != nil {
+                                if tempDate <= self.endDate! {
+                                    calendarDate.date = tempDate.resetTime()
+                                    ucMonth.month = calendarDate.date
+                                    reEntry(month: calendarDate.date)
+                                    obsObject.count += 1
+                                }
+                            } else {
+                                calendarDate.date = tempDate.resetTime()
+                                ucMonth.month = calendarDate.date
+                                reEntry(month: calendarDate.date)
+                                obsObject.count += 1
+                            }
+                        },
+                        label: {
+                            Label("", systemImage: "chevron.right")
+                        }
+                    )
+                    .padding(.leading, 10.0)
+                    Spacer()
+                    Spacer()
+                }
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        calendarDate.date = Date().resetTime()
+                        ucMonth.month = calendarDate.date
+                        reEntry(month: calendarDate.date)
+                        obsObject.count += 1
+                    }, label: {
+                        Label("", systemImage: "calendar")
+                    })
+                    .frame(alignment: .trailing)
+                    .padding(.trailing)
                 }
             }
-            .onChange(of: detailedEntryList.entryList, perform: { _ in
-                obsObject.count += 1
-            })
+            UCMonthView(ucMonth: self.ucMonth, maxLinesInDayTable: maxLinesInDayTable)
+            VStack {
+                DateBelt()
+                List{
+                    ForEach(detailedEntryList.entryList, id: \.uuid) { ucEntryView in
+                        ucEntryView
+                    }
+                }
+                .listStyle(PlainListStyle())
+                .onChange(of: detailedEntryList.entryList, perform: { _ in
+                    obsObject.count += 1
+                })
+            }
+        }
+        .onChange(of: calendarDate.date, perform: { date in
+            reEntry(month: date)
+            obsObject.count += 1
+        })
+        .onAppear() {
+            calendarDate.date = self.month.resetTime()
+            reEntry(month: calendarDate.date)
         }
     }
 }
@@ -440,7 +597,6 @@ public struct UCalendarView: View {
     var month: Date
     var ucEntries: [UCEntry]
     private var maxLinesInDayTable: Int
-    @EnvironmentObject var detailedEntryList: EntryList
 
     public init(
         month: Date,
@@ -453,8 +609,10 @@ public struct UCalendarView: View {
     }
 
     public var body: some View {
-        UCalendarViewImpl(month: month, ucEntries: ucEntries, maxLinesInDayTable: maxLinesInDayTable)
+        UCalendarViewImpl(month: month.resetTime(), ucEntries: ucEntries, maxLinesInDayTable: maxLinesInDayTable, endDate: nil)
             .environmentObject(EntryList())
+            .environmentObject(BeltDate())
+            .environmentObject(CalendarDate())
     }
 }
 

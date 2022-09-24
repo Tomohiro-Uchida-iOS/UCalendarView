@@ -11,36 +11,37 @@ import UCalendarView
 
 struct ContentView: View {
     
-    @State var month = Date()
-    @State var ucEntries: [UCEntry] = []
+    var month = Date()
+    var ucEntries: [UCEntry] = []
+    
+    init() {
+        let calendar = Calendar(identifier: .gregorian)
+        var components = DateComponents()
+        components.year = calendar.component(.year, from: month)
+        components.month = calendar.component(.month, from: month)
+        for day in 1...28 {
+            components.day = day
+            let ucEntry = UCEntry(
+                date: calendar.date(from: components)!,
+                leftLabel: "Left",
+                leftLabelColor: Color.cyan,
+                middleLabel: "Middle",
+                middleLabelColor: Color.cyan,
+                value: String(format: "Value=%d", day),
+                valueColor: Color.red,
+                unit: "Unit",
+                unitColor: Color.blue,
+                rightLabel: "Right",
+                rightLabelColor: Color.cyan,
+                tableFontSize: 10.0,
+                listFontSize: 12.0
+            )
+            self.ucEntries.append(ucEntry)
+        }
+    }
     
     var body: some View {
         UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 5)
-            .onAppear() {
-                let calendar = Calendar(identifier: .gregorian)
-                var components = DateComponents()
-                components.year = calendar.component(.year, from: month)
-                components.month = calendar.component(.month, from: month)
-                for day in 1...28 {
-                    components.day = day
-                    let ucEntry = UCEntry(
-                        date: calendar.date(from: components)!,
-                        leftLabel: "Left",
-                        leftLabelColor: Color.cyan,
-                        middleLabel: "Middle",
-                        middleLabelColor: Color.cyan,
-                        value: String(format: "Value=%d", day),
-                        valueColor: Color.red,
-                        unit: "Unit",
-                        unitColor: Color.blue,
-                        rightLabel: "Right",
-                        rightLabelColor: Color.cyan,
-                        tableFontSize: 10.0,
-                        listFontSize: 12.0
-                    )
-                    self.ucEntries.append(ucEntry)
-                }
-            }
     }
 }
 
