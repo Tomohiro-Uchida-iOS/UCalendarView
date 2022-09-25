@@ -5,6 +5,7 @@
   Created by Tomohiro Uchida on 2022/09/04.
 */
 
+"ButtonToday" = "今日";
 "LabelSunday" = "日";
 "LabelMonday" = "月";
 "LabelTuesday" = "火";

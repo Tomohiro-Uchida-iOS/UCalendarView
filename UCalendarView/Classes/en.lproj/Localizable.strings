@@ -5,11 +5,12 @@
   Created by Tomohiro Uchida on 2022/09/04.
 */
 
-"LabelSunday" = "S"
-"LabelMonday" = "M"
-"LabelTuesDay" = "T"
-"LabelWednesday" = "W"
-"LabelThursday" = "T"
-"LabelFriday" = "F"
-"LabelSaturday" = "S"
+"ButtonToday" = "Today";
+"LabelSunday" = "SU";
+"LabelMonday" = "MO";
+"LabelTuesday" = "TU";
+"LabelWednesday" = "WE";
+"LabelThursday" = "TH";
+"LabelFriday" = "FR";
+"LabelSaturday" = "SA";
 

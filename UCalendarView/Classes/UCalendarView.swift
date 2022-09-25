@@ -176,11 +176,6 @@ private class UCDay {
         ucEntries: [UCEntry]
     ) {
         self.date = date
-        /*
-        self.ucEntries = ucEntries.filter {
-            $0.date == self.date
-        }
-         */
         self.ucEntries = ucEntries
     }
 }
@@ -369,20 +364,50 @@ private struct UCMonthView: View {
     public var body: some View {
         VStack {
             HStack {
-                Text("LabelSunday")
-                    .frame(alignment: .center)
-                Text("LabelMonday")
-                    .frame(alignment: .center)
-                Text("LabelTuesday")
-                    .frame(alignment: .center)
-                Text("LabelWednesday")
-                    .frame(alignment: .center)
-                Text("LabelThursday")
-                    .frame(alignment: .center)
-                Text("LabelFriday")
-                    .frame(alignment: .center)
-                Text("LabelSaturday")
-                    .frame(alignment: .center)
+                let bundle = Bundle(identifier: "org.cocoapods.UCalendarView")
+                Group {
+                    Spacer()
+                    Text(NSLocalizedString("LabelSunday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .foregroundColor(Color.red)
+                        .padding(.all, 0)
+                    Spacer()
+                    Spacer()
+                    Text(NSLocalizedString("LabelMonday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .padding(.all, 0)
+                    Spacer()
+                }
+                Group {
+                    Spacer()
+                    Text(NSLocalizedString("LabelTuesday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .padding(.all, 0)
+                    Spacer()
+                    Spacer()
+                    Text(NSLocalizedString("LabelWednesday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .padding(.all, 0)
+                    Spacer()
+                }
+                Group {
+                    Spacer()
+                    Text(NSLocalizedString("LabelThursday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .padding(.all, 0)
+                    Spacer()
+                    Spacer()
+                    Text(NSLocalizedString("LabelFriday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .padding(.all, 0)
+                    Spacer()
+                    Spacer()
+                    Text(NSLocalizedString("LabelSaturday", bundle: bundle!, comment: ""))
+                        .frame(alignment: .center)
+                        .foregroundColor(Color.blue)
+                        .padding(.all, 0)
+                    Spacer()
+                }
             }
             ForEach (self.ucMonth.ucWeeks, id: \.uuid) { ucWeek in
                 UCWeekView(
@@ -603,14 +628,13 @@ private struct UCalendarViewImpl: View {
                 }
                 HStack {
                     Spacer()
-                    Button(action: {
+                    let bundle = Bundle(identifier: "org.cocoapods.UCalendarView")
+                    Button(NSLocalizedString("ButtonToday", bundle: bundle!,  comment: "")) {
                         calendarDate.date = Date().resetTime()
                         ucMonth.month = calendarDate.date
                         reEntry(month: calendarDate.date)
                         obsObject.count += 1
-                    }, label: {
-                        Label("", systemImage: "calendar")
-                    })
+                    }
                     .frame(alignment: .trailing)
                     .padding(.trailing)
                 }
