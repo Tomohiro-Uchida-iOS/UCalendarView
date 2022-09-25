@@ -379,7 +379,7 @@ private struct UCMonthView: View {
     public var body: some View {
         VStack {
             HStack {
-                let bundle = Bundle(identifier: "org.cocoapods.UCalendarView")
+                let bundle = Bundle(identifier: "com.jimdo.uchida001tmhr.UCalendarView")
                 Group {
                     Spacer()
                     Text(NSLocalizedString("LabelSunday", bundle: bundle!, comment: ""))
@@ -654,7 +654,7 @@ private struct UCalendarViewImpl: View {
                 }
                 HStack {
                     Spacer()
-                    let bundle = Bundle(identifier: "org.cocoapods.UCalendarView")
+                    let bundle = Bundle(identifier: "com.jimdo.uchida001tmhr.UCalendarView")
                     Button(NSLocalizedString("ButtonToday", bundle: bundle!,  comment: "")) {
                         calendarDate.date = Date().resetTime()
                         ucMonth.month = calendarDate.date
