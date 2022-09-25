@@ -12,6 +12,7 @@ public class EntryList: ObservableObject {
 }
 
 public class BeltDate: ObservableObject {
+    @Published var enabled: Bool = false
     @Published var date: Date = Date().resetTime()
 }
 
@@ -32,7 +33,7 @@ public class UCEntry {
     var leftLabelColor: Color = Color.black
     var middleLabel: String = ""
     var middleLabelColor: Color = Color.black
-    var value: String = " "  // Space, not empty String
+    var value: String = "          "  // Space, not empty String
     var valueColor: Color = Color.black
     var unit: String = ""
     var unitColor: Color = Color.black
@@ -199,36 +200,43 @@ private struct UCDayView: View {
     }
         
     public var body: some View {
-        VStack {
-            let calendar = Calendar(identifier: .gregorian)
-            HStack {
-                switch self.ucDayType {
-                case .sunday:
-                    Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
-                        .foregroundColor(Color.red)
-                        .font(.system(size: 11))
-                case .saturday:
-                    Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
-                        .foregroundColor(Color.blue)
-                        .font(.system(size: 11))
-                default:
-                    Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
-                        .foregroundColor(Color.black)
-                        .font(.system(size: 11))
+        ZStack {
+            if beltDate.enabled && beltDate.date == ucDay.date {
+                Color(UIColor.rgba(red: 0xA0, green: 0xC0, blue: 0xF0, alpha: 0xFF))
+            } else {
+                Color(.clear)
+            }
+            VStack() {
+                let calendar = Calendar(identifier: .gregorian)
+                HStack {
+                    switch self.ucDayType {
+                    case .sunday:
+                        Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                            .foregroundColor(Color.red)
+                            .font(.system(size: 11))
+                    case .saturday:
+                        Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                            .foregroundColor(Color.blue)
+                            .font(.system(size: 11))
+                    default:
+                        Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                            .foregroundColor(Color.black)
+                            .font(.system(size: 11))
+                    }
+                    Spacer()
                 }
-                Spacer()
-            }
-            ForEach (0..<self.maxEntriesInTable, id: \.self) { index in
-                UCEntryView(
-                    ucEntryViewType: .table,
-                    ucEntry: self.ucDay.ucEntries[index]
-                )
-            }
-            ForEach (0..<(self.maxLinesInDayTable-self.maxEntriesInTable), id: \.self) { _ in
-                UCEntryView(
-                    ucEntryViewType: .table,
-                    ucEntry: UCEntry()
-                )
+                ForEach (0..<self.maxEntriesInTable, id: \.self) { index in
+                    UCEntryView(
+                        ucEntryViewType: .table,
+                        ucEntry: self.ucDay.ucEntries[index]
+                    )
+                }
+                ForEach (0..<(self.maxLinesInDayTable-self.maxEntriesInTable), id: \.self) { _ in
+                    UCEntryView(
+                        ucEntryViewType: .table,
+                        ucEntry: UCEntry()
+                    )
+                }
             }
         }
         .border(Color(UIColor.rgba(red: 0xE0, green: 0xE0, blue: 0xE0, alpha: 0xFF)), width: 1)
@@ -251,10 +259,17 @@ private struct UCDayView: View {
             }
         }
         .onTapGesture {
+            if beltDate.enabled  && beltDate.date == ucDay.date {
+                beltDate.enabled = false
+            } else {
+                beltDate.enabled = true
+            }
             beltDate.date = ucDay.date
             detailedEntryList.entryList.removeAll()
-            ucDay.ucEntries.forEach{ucEntry in
-                detailedEntryList.entryList.append(UCEntryView(ucEntryViewType: .list, ucEntry: ucEntry))
+            if beltDate.enabled {
+                ucDay.ucEntries.forEach{ucEntry in
+                    detailedEntryList.entryList.append(UCEntryView(ucEntryViewType: .list, ucEntry: ucEntry))
+                }
             }
         }
     }
@@ -459,8 +474,13 @@ private func ucEntriesInDay(
 }
 
 private struct DateBelt: View {
+    private var addButton: Bool
     @State var dateFormatter = DateFormatter()
     @EnvironmentObject var beltDate: BeltDate
+    
+    init(addButton: Bool) {
+        self.addButton = addButton
+    }
     
     public var body: some View {
         
@@ -469,12 +489,16 @@ private struct DateBelt: View {
                 .fill(Color(uiColor: UIColor.rgba(red: 0xF0, green: 0xF0, blue: 0xF0, alpha: 0xFF)))
                 .frame(height: 25)
             HStack {
-                Text(dateFormatter.string(from: beltDate.date))
-                    .frame(alignment: .leading)
-                Spacer()
+                if beltDate.enabled {
+                    Text(dateFormatter.string(from: beltDate.date))
+                        .frame(alignment: .leading)
+                    Spacer()
+                }
             }
-            Button("+", action: {
-            })
+            if addButton {
+                Button("+", action: {
+                })
+            }
         }
         .onAppear() {
             dateFormatter.locale = Locale(identifier: "ja_JP")
@@ -489,11 +513,11 @@ private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
 
 private struct UCalendarViewImpl: View {
 
-    var month: Date
-    var ucEntries: [UCEntry]
-    // @State private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+    private var month: Date
+    private var ucEntries: [UCEntry]
     private var maxLinesInDayTable: Int
     private var endDate: Date?
+    private var addButton: Bool
     @ObservedObject private var obsObject = ObserveModel()
     @EnvironmentObject var detailedEntryList: EntryList
     @EnvironmentObject var calendarDate: CalendarDate
@@ -502,12 +526,14 @@ private struct UCalendarViewImpl: View {
         month: Date,
         ucEntries: [UCEntry],
         maxLinesInDayTable: Int,
-        endDate: Date?
+        endDate: Date?,
+        addButton: Bool
     ) {
         self.month = month.resetTime()
         self.ucEntries = ucEntries
         self.maxLinesInDayTable = maxLinesInDayTable
         self.endDate = endDate
+        self.addButton = addButton
 
         var ucWeeks: [UCWeek] = []
         var ucDays: [UCDay] = []
@@ -641,7 +667,7 @@ private struct UCalendarViewImpl: View {
             }
             UCMonthView(ucMonth: ucMonth, maxLinesInDayTable: maxLinesInDayTable)
             VStack {
-                DateBelt()
+                DateBelt(addButton: addButton)
                 List{
                     ForEach(detailedEntryList.entryList, id: \.uuid) { ucEntryView in
                         ucEntryView
@@ -666,22 +692,25 @@ private struct UCalendarViewImpl: View {
 
 public struct UCalendarView: View {
 
-    var month: Date
-    var ucEntries: [UCEntry]
+    private var month: Date
+    private var ucEntries: [UCEntry]
     private var maxLinesInDayTable: Int
+    private var addButton: Bool
 
     public init(
         month: Date,
         ucEntries: [UCEntry],
-        maxLinesInDayTable: Int
+        maxLinesInDayTable: Int,
+        addButton: Bool
     ) {
         self.month = month
         self.ucEntries = ucEntries
         self.maxLinesInDayTable = maxLinesInDayTable
+        self.addButton = addButton
     }
 
     public var body: some View {
-        UCalendarViewImpl(month: month.resetTime(), ucEntries: ucEntries, maxLinesInDayTable: maxLinesInDayTable, endDate: nil)
+        UCalendarViewImpl(month: month.resetTime(), ucEntries: ucEntries, maxLinesInDayTable: maxLinesInDayTable, endDate: nil, addButton: addButton)
             .environmentObject(EntryList())
             .environmentObject(BeltDate())
             .environmentObject(CalendarDate())
