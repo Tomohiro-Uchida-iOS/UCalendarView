@@ -14,20 +14,32 @@ public class EntryList: ObservableObject {
 public class BeltDate: ObservableObject {
     @Published var enabled: Bool = false
     @Published var date: Date = Date().resetTime()
+
+    public init() {}
 }
 
 public class CalendarDate: ObservableObject {
     @Published var date: Date = Date().resetTime()
+
+    public init() {}
 }
 
+/*
+public class UCEntries: ObservableObject {
+    @Published var ucEntries: [UCEntry] = []
+
+    public init() {}
+}
+ */
 
 enum UCEntryViewType {
     case table
     case list
 }
 
-public class UCEntry {
+public class UCEntry: Equatable {
     var uuid = UUID()
+    var applicationTag: String = ""
     var date: Date = Date().resetTime()
     var leftLabel: String = ""
     var leftLabelColor: Color = Color.black
@@ -43,8 +55,9 @@ public class UCEntry {
     var listFontSize: CGFloat = 12.0
     var tableAlignment: Alignment = .leading
 
-    static func == (lhs: UCEntry, rhs: UCEntry) -> Bool {
-        return lhs.date == rhs.date &&
+    public static func == (lhs: UCEntry, rhs: UCEntry) -> Bool {
+        return lhs.applicationTag == rhs.applicationTag &&
+        lhs.date == rhs.date &&
         lhs.leftLabel == rhs.leftLabel &&
         lhs.middleLabel == rhs.middleLabel &&
         lhs.value == rhs.value &&
@@ -55,6 +68,7 @@ public class UCEntry {
     public init() {}
     
     public init(
+        applicationTag: String,
         date: Date,
         leftLabel: String,
         leftLabelColor: Color,
@@ -70,6 +84,7 @@ public class UCEntry {
         listFontSize: CGFloat,
         tableAlignment: Alignment
     ) {
+        self.applicationTag = applicationTag
         self.date = date
         self.leftLabel = leftLabel
         self.leftLabelColor = leftLabelColor
@@ -93,7 +108,8 @@ struct UCEntryView: View, Equatable {
     var uuid = UUID()
     @State var ucEntryViewType: UCEntryViewType = .table
     @State var ucEntry: UCEntry
-    @ObservedObject private var obsObject = ObserveModel()
+    // @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var calendarDate: CalendarDate
 
     static func == (lhs: UCEntryView, rhs: UCEntryView) -> Bool {
@@ -186,7 +202,8 @@ private struct UCDayView: View {
     @State var ucDayType: UCDayViewType = .weekday
     var maxLinesInDayTable: Int
     @State var maxEntriesInTable: Int = 0
-    @ObservedObject private var obsObject = ObserveModel()
+    // @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var detailedEntryList: EntryList
     @EnvironmentObject var beltDate: BeltDate
     @EnvironmentObject var calendarDate: CalendarDate
@@ -325,7 +342,8 @@ private class UCWeek {
 private struct UCWeekView: View {
     private var ucWeek: UCWeek
     private var maxLinesInDayTable: Int
-    @ObservedObject private var obsObject = ObserveModel()
+    // @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var calendarDate: CalendarDate
 
     public init(
@@ -365,7 +383,8 @@ private class UCMonth {
 private struct UCMonthView: View {
     private var ucMonth: UCMonth
     private var maxLinesInDayTable: Int
-    @ObservedObject private var obsObject = ObserveModel()
+    // @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var calendarDate: CalendarDate
 
     init(
@@ -497,6 +516,8 @@ private struct DateBelt: View {
             }
             if addButton {
                 Button("+", action: {
+                    var ucAddEntry = UCAddEntry()
+                    gUcCallback.addUCEntry?(&ucAddEntry)
                 })
             }
         }
@@ -514,26 +535,34 @@ private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
 private struct UCalendarViewImpl: View {
 
     private var month: Date
-    private var ucEntries: [UCEntry]
     private var maxLinesInDayTable: Int
+    private var startDate: Date?
     private var endDate: Date?
     private var addButton: Bool
-    @ObservedObject private var obsObject = ObserveModel()
+    // @ObservedObject private var obsObject = ObserveModel()
+    @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var detailedEntryList: EntryList
     @EnvironmentObject var calendarDate: CalendarDate
+    // @EnvironmentObject var mUcEntries: UCEntries
+    // var ucEntriesTemp: [UCEntry]
+    var mUcEntries: [UCEntry]
+    @State var index = 0
 
     init(
         month: Date,
         ucEntries: [UCEntry],
         maxLinesInDayTable: Int,
+        startDate: Date?,
         endDate: Date?,
         addButton: Bool
     ) {
         self.month = month.resetTime()
-        self.ucEntries = ucEntries
         self.maxLinesInDayTable = maxLinesInDayTable
+        self.startDate = startDate
         self.endDate = endDate
         self.addButton = addButton
+
+        self.mUcEntries = ucEntries
 
         var ucWeeks: [UCWeek] = []
         var ucDays: [UCDay] = []
@@ -542,7 +571,7 @@ private struct UCalendarViewImpl: View {
         var pointedDate = startDateInMonth(month: month)
         ucDays.removeAll()
         for _ in 1...42 {
-            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInDay(date: pointedDate, inUcEntries: self.ucEntries))
+            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInDay(date: pointedDate, inUcEntries: mUcEntries))
             ucDays.append(ucDay)
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
@@ -558,6 +587,11 @@ private struct UCalendarViewImpl: View {
         ucMonth = UCMonth(month: month, ucWeeks: ucWeeks)
     }
 
+    func incrementIndex() -> some View {
+        self.index += 1
+        return EmptyView()
+    }
+    
     func reEntry(month: Date) {
         var ucWeeks: [UCWeek] = []
         var ucDays: [UCDay] = []
@@ -566,7 +600,7 @@ private struct UCalendarViewImpl: View {
         var pointedDate = startDateInMonth(month: month)
         ucDays.removeAll()
         for _ in 1...42 {
-            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInDay(date: pointedDate, inUcEntries: self.ucEntries))
+            let ucDay = UCDay(date: pointedDate, ucEntries: ucEntriesInDay(date: pointedDate, inUcEntries: mUcEntries))
             ucDays.append(ucDay)
             pointedDate = calendar.date(byAdding: .day, value: 1, to: pointedDate.resetTime())!
         }
@@ -582,6 +616,17 @@ private struct UCalendarViewImpl: View {
         ucMonth = UCMonth(month: month, ucWeeks: ucWeeks)
     }
     
+    private func getIndexFromApplicationTag(applicationTag: String) -> Int {
+        var index = 0
+        for ucEntry in mUcEntries {
+            if ucEntry.applicationTag == applicationTag {
+                return index
+            }
+            index += 1
+        }
+        return -1
+    }
+
     public var body: some View {
         VStack {
             ZStack {
@@ -600,7 +645,33 @@ private struct UCalendarViewImpl: View {
                         }
                     )
                     Spacer()
-                    if self.endDate != nil {
+                    if self.startDate == nil && self.endDate == nil {
+                        DatePicker("",
+                                   selection: $calendarDate.date,
+                                   displayedComponents: .date)
+                        .onChange(of: calendarDate.date, perform: { date in
+                            calendarDate.date = date.resetTime()
+                            ucMonth.month = calendarDate.date
+                            reEntry(month: calendarDate.date)
+                            obsObject.count += 1
+                        })
+                        .environment(\.locale, Locale(identifier: "ja_JP"))
+                        .labelsHidden()
+                    } else if self.startDate != nil && self.endDate == nil {
+                        DatePicker("",
+                                   selection: $calendarDate.date,
+                                   in: self.startDate!...,
+                                   displayedComponents: .date)
+                        .onChange(of: calendarDate.date, perform: { date in
+                            calendarDate.date = date.resetTime()
+                            ucMonth.month = calendarDate.date
+                            reEntry(month: calendarDate.date)
+                            obsObject.count += 1
+                        })
+                        .environment(\.locale, Locale(identifier: "ja_JP"))
+                        .labelsHidden()
+
+                    } else if self.startDate == nil && self.endDate != nil {
                         DatePicker("",
                                    selection: $calendarDate.date,
                                    in: ...self.endDate!,
@@ -616,6 +687,7 @@ private struct UCalendarViewImpl: View {
                     } else {
                         DatePicker("",
                                    selection: $calendarDate.date,
+                                   in: self.startDate!...self.endDate!,
                                    displayedComponents: .date)
                         .onChange(of: calendarDate.date, perform: { date in
                             calendarDate.date = date.resetTime()
@@ -671,12 +743,60 @@ private struct UCalendarViewImpl: View {
                 List{
                     ForEach(detailedEntryList.entryList, id: \.uuid) { ucEntryView in
                         ucEntryView
+                            .swipeActions(edge: .leading, allowsFullSwipe: true, content: {
+                                Button(action: {
+                                    var ucEditEntry = UCEditEntry()
+                                    ucEditEntry.applicationTag = ucEntryView.ucEntry.applicationTag
+                                    ucEditEntry.date = ucEntryView.ucEntry.date
+                                    ucEditEntry.leftLabel = ucEntryView.ucEntry.leftLabel
+                                    ucEditEntry.leftLabelColor = ucEntryView.ucEntry.leftLabelColor
+                                    ucEditEntry.middleLabel = ucEntryView.ucEntry.middleLabel
+                                    ucEditEntry.middleLabelColor = ucEntryView.ucEntry.middleLabelColor
+                                    ucEditEntry.value = ucEntryView.ucEntry.value
+                                    ucEditEntry.valueColor = ucEntryView.ucEntry.valueColor
+                                    ucEditEntry.unit = ucEntryView.ucEntry.unit
+                                    ucEditEntry.unitColor = ucEntryView.ucEntry.unitColor
+                                    ucEditEntry.rightLabel = ucEntryView.ucEntry.rightLabel
+                                    ucEditEntry.rightLabelColor = ucEntryView.ucEntry.rightLabelColor
+                                    ucEditEntry.tableFontSize = ucEntryView.ucEntry.tableFontSize
+                                    ucEditEntry.listFontSize = ucEntryView.ucEntry.listFontSize
+                                    ucEditEntry.tableAlignment = ucEntryView.ucEntry.tableAlignment
+                                    gUcCallback.editUCEntry?(&ucEditEntry)
+                                    print("editUCEntry2:", ucEditEntry.value)  // DEBUG
+                                    let index = getIndexFromApplicationTag(applicationTag: ucEditEntry.applicationTag)
+                                    mUcEntries[index].value = ucEditEntry.value
+                                    obsObject.objectWillChange.send()
+                                }, label: {
+                                    Label("", systemImage: "square.and.pencil")
+                                })
+                                .tint(.orange)
+                            })
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true, content: {
+                                Button (role: .destructive, action: {
+                                    let ucDeleteEntry = UCDeleteEntry()
+                                    ucDeleteEntry.applicationTag = ucEntryView.ucEntry.applicationTag
+                                    gUcCallback.deleteUCEntry?(ucDeleteEntry)
+                                }, label: {
+                                    Label("", systemImage: "trash")
+                                })
+                            })
+                        incrementIndex()
+                    }
+                    .onAppear() {
+                        index = 0
                     }
                 }
                 .listStyle(PlainListStyle())
                 .onChange(of: detailedEntryList.entryList, perform: { _ in
-                    obsObject.count += 1
+                    reEntry(month: calendarDate.date)
+                    obsObject.objectWillChange.send()
+                    // obsObject.count += 1
                 })
+                .onChange(of: mUcEntries) { _ in
+                    reEntry(month: calendarDate.date)
+                    obsObject.objectWillChange.send()
+                    // obsObject.count += 1
+                }
             }
         }
         .onChange(of: calendarDate.date, perform: { date in
@@ -686,9 +806,77 @@ private struct UCalendarViewImpl: View {
         .onAppear() {
             calendarDate.date = self.month.resetTime()
             reEntry(month: calendarDate.date)
+            // mUcEntries.ucEntries = ucEntriesTemp
         }
     }
 }
+
+public class UCAddEntry {
+    public var applicationTag: String = ""
+    public var date: Date = Date().resetTime()
+    public var leftLabel: String = ""
+    public var leftLabelColor: Color = Color.black
+    public var middleLabel: String = ""
+    public var middleLabelColor: Color = Color.black
+    public var value: String = "          "  // Space, not empty String
+    public var valueColor: Color = Color.black
+    public var unit: String = ""
+    public var unitColor: Color = Color.black
+    public var rightLabel: String = ""
+    public var rightLabelColor: Color = Color.black
+    public var tableFontSize: CGFloat = 10.0
+    public var listFontSize: CGFloat = 12.0
+    public var tableAlignment: Alignment = .leading
+    
+    public init() {}
+
+}
+
+public class UCDeleteEntry {
+    public var applicationTag: String = ""
+    
+    public init() {}
+
+}
+
+public class UCEditEntry {
+    public var applicationTag: String = ""
+    public var date: Date = Date().resetTime()
+    public var leftLabel: String = ""
+    public var leftLabelColor: Color = Color.black
+    public var middleLabel: String = ""
+    public var middleLabelColor: Color = Color.black
+    public var value: String = "          "  // Space, not empty String
+    public var valueColor: Color = Color.black
+    public var unit: String = ""
+    public var unitColor: Color = Color.black
+    public var rightLabel: String = ""
+    public var rightLabelColor: Color = Color.black
+    public var tableFontSize: CGFloat = 10.0
+    public var listFontSize: CGFloat = 12.0
+    public var tableAlignment: Alignment = .leading
+        
+    public init() {}
+
+}
+
+public class UCCallback {
+    public var addUCEntry: ((_ ucAddEntry: inout UCAddEntry) -> ())? = nil
+    public var deleteUCEntry: ((_ ucDeleteEntry: UCDeleteEntry) -> ())? = nil
+    public var editUCEntry: ((_ ucEditEntry: inout UCEditEntry) -> ())? = nil
+    
+    public init() {}
+    
+}
+
+private var gUcCallback: UCCallback  = UCCallback()
+
+public func registerCallback(
+    ucCallback: UCCallback
+) {
+    gUcCallback = ucCallback
+}
+
 
 public struct UCalendarView: View {
 
@@ -710,10 +898,18 @@ public struct UCalendarView: View {
     }
 
     public var body: some View {
-        UCalendarViewImpl(month: month.resetTime(), ucEntries: ucEntries, maxLinesInDayTable: maxLinesInDayTable, endDate: nil, addButton: addButton)
-            .environmentObject(EntryList())
-            .environmentObject(BeltDate())
-            .environmentObject(CalendarDate())
+        UCalendarViewImpl(
+            month: month.resetTime(),
+            ucEntries: ucEntries,
+            maxLinesInDayTable: maxLinesInDayTable,
+            startDate: nil,
+            endDate: nil,
+            addButton: addButton
+        )
+        .environmentObject(EntryList())
+        .environmentObject(BeltDate())
+        .environmentObject(CalendarDate())
+        .environmentObject(ObserveModel())
     }
 }
 
