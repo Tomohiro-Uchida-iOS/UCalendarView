@@ -27,11 +27,6 @@ struct ContentView: View {
         self.isShowingAdd = true
     }
 
-    @State var ucDeleteEntry = UCDeleteEntry()
-
-    func deleteUCEntry(ucDeleteEntry: UCDeleteEntry) {
-    }
-
     @State var ucEditEntry = UCEditEntry()
     @State var ucEditCallback: ((UCEditEntry) -> Void)? = nil
 
@@ -40,12 +35,19 @@ struct ContentView: View {
         self.ucEditCallback = ucEditCallback
         self.isShowingEdit = true
     }
+
+    @State var ucDeleteEntry = UCDeleteEntry()
+
+    func deleteUCEntry(ucDeleteEntry: UCDeleteEntry) {
+        self.ucDeleteEntry = ucDeleteEntry
+        self.isShowingDelete = true
+    }
     
     @State var myCallback = UCCallback()
     
     @State var isShowingAdd = false
-    @State var isShowingDelete = false
     @State var isShowingEdit = false
+    @State var isShowingDelete = false
 
     struct AddView: View {
         
@@ -132,52 +134,59 @@ struct ContentView: View {
             }
         }
     }
-
+    
     var body: some View {
         
-        UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 5, addButton: true)
-            .onAppear() {
-                let calendar = Calendar(identifier: .gregorian)
-                var components = DateComponents()
-                components.year = calendar.component(.year, from: month)
-                components.month = calendar.component(.month, from: month)
-                for day in 1...28 {
-                    components.day = day
-                    for item in 1...3 {
-                        let ucEntry = UCEntry(
-                            applicationTag: NSUUID().uuidString,
-                            date: calendar.date(from: components)!,
-                            leftLabel: "Left",
-                            leftLabelColor: Color.cyan,
-                            middleLabel: "Middle",
-                            middleLabelColor: Color.cyan,
-                            value: String(format: "Entry %d-%d", day, item),
-                            valueColor: Color.red,
-                            unit: "Unit",
-                            unitColor: Color.blue,
-                            rightLabel: "Right",
-                            rightLabelColor: Color.cyan,
-                            tableFontSize: 10.0,
-                            listFontSize: 12.0,
-                            tableAlignment: .trailing
-                        )
-                        self.ucEntries.append(ucEntry)
+        ZStack {
+            UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 5, addButton: true)
+                .onAppear() {
+                    let calendar = Calendar(identifier: .gregorian)
+                    var components = DateComponents()
+                    components.year = calendar.component(.year, from: month)
+                    components.month = calendar.component(.month, from: month)
+                    for day in 1...28 {
+                        components.day = day
+                        for item in 1...3 {
+                            let ucEntry = UCEntry(
+                                applicationTag: NSUUID().uuidString,
+                                date: calendar.date(from: components)!,
+                                leftLabel: "Left",
+                                leftLabelColor: Color.cyan,
+                                middleLabel: "Middle",
+                                middleLabelColor: Color.cyan,
+                                value: String(format: "Entry %d-%d", day, item),
+                                valueColor: Color.red,
+                                unit: "Unit",
+                                unitColor: Color.blue,
+                                rightLabel: "Right",
+                                rightLabelColor: Color.cyan,
+                                tableFontSize: 10.0,
+                                listFontSize: 12.0,
+                                tableAlignment: .trailing
+                            )
+                            self.ucEntries.append(ucEntry)
+                        }
                     }
+                    myCallback.addUCEntry = addUCEntry(ucAddEntry: ucAddCallback:)
+                    myCallback.deleteUCEntry = deleteUCEntry(ucDeleteEntry:)
+                    myCallback.editUCEntry = editUCEntry(ucEditEntry: ucEditCallback:)
+                    registerCallback(ucCallback: myCallback)
                 }
-                myCallback.addUCEntry = addUCEntry(ucAddEntry: ucAddCallback:)
-                myCallback.deleteUCEntry = deleteUCEntry(ucDeleteEntry:)
-                myCallback.editUCEntry = editUCEntry(ucEditEntry: ucEditCallback:)
-                registerCallback(ucCallback: myCallback)
-            }
-            .sheet(isPresented: $isShowingAdd, content: {
-                AddView(ucAddEntry: self.$ucAddEntry, ucAddCallback: self.$ucAddCallback)
-            })
-            .sheet(isPresented: $isShowingEdit, content: {
-                // EditView(ucEditEntry: self.ucEditEntry, ucEditCallback: self.ucEditCallback!)
-                // ↑本来、これでOKなはずだか、なぜかself.ucEditCallbackにnilが入る。
-                // Appleの不具合と思われるが、Appleは直す様子がない。
-                EditView(ucEditEntry: self.$ucEditEntry, ucEditCallback: self.$ucEditCallback)
-            })
+                .sheet(isPresented: $isShowingAdd, content: {
+                    AddView(ucAddEntry: self.$ucAddEntry, ucAddCallback: self.$ucAddCallback)
+                })
+                .sheet(isPresented: $isShowingEdit, content: {
+                    // EditView(ucEditEntry: self.ucEditEntry, ucEditCallback: self.ucEditCallback!)
+                    // ↑本来、これでOKなはずだか、なぜかself.ucEditCallbackにnilが入る。
+                    // Appleの不具合と思われるが、Appleは直す様子がない。
+                    EditView(ucEditEntry: self.$ucEditEntry, ucEditCallback: self.$ucEditCallback)
+                })
+            EmptyView()
+                .toast(
+                    message: NSLocalizedString("Deleted", comment: ""),
+                    isShowing: $isShowingDelete,
+                    duration: Toast.short)
+        }
     }
 }
 

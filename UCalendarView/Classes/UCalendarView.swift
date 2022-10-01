@@ -814,6 +814,10 @@ private struct UCalendarViewImpl: View {
                                 Button (role: .destructive, action: {
                                     let ucDeleteEntry = UCDeleteEntry()
                                     ucDeleteEntry.applicationTag = ucEntryView.ucEntry.applicationTag
+                                    let index = getIndexFromApplicationTag(applicationTag: ucDeleteEntry.applicationTag)
+                                    entryList.entries.remove(at: index)
+                                    reEntry(month: calendarDate.date, actionDetailedEntryViewList: .display)
+                                    obsObject.objectWillChange.send()
                                     gUcCallback.deleteUCEntry?(ucDeleteEntry)
                                 }, label: {
                                     Label("", systemImage: "trash")
