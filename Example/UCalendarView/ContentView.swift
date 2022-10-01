@@ -143,7 +143,7 @@ struct ContentView: View {
                 components.month = calendar.component(.month, from: month)
                 for day in 1...28 {
                     components.day = day
-                    for item in 1...10 {
+                    for item in 1...3 {
                         let ucEntry = UCEntry(
                             applicationTag: NSUUID().uuidString,
                             date: calendar.date(from: components)!,

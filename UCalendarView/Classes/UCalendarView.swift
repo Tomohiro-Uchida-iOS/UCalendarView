@@ -490,6 +490,7 @@ private func ucEntriesInDay(
 
 
 private var ucMonth: UCMonth = UCMonth(month: Date().resetTime(), ucWeeks: [])
+private var entryList = EntryList()
 
 private struct UCalendarViewImpl: View {
 
@@ -499,7 +500,6 @@ private struct UCalendarViewImpl: View {
     private var endDate: Date?
     private var addButton: Bool
     @EnvironmentObject var obsObject: ObserveModel
-    var entryList = EntryList()
     @EnvironmentObject var detailedEntryViewList: EntryViewList
     @EnvironmentObject var calendarDate: CalendarDate
     @EnvironmentObject var beltDate: BeltDate
@@ -518,7 +518,7 @@ private struct UCalendarViewImpl: View {
         self.endDate = endDate
         self.addButton = addButton
 
-        self.entryList.entries = ucEntries
+        entryList.entries = ucEntries
         reEntry(month: self.month, actionDetailedEntryViewList: .stay)
         
     }
