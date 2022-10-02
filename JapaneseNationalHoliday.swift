@@ -21,9 +21,9 @@ public class JapaneseNationalHoliday {
     private func getGanjitsu(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 1) && (day == 1) {
             holiday.isHoliday = true
@@ -39,10 +39,10 @@ public class JapaneseNationalHoliday {
     private func getSeijin_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date.resetTime())
-        let weekday = calendar.component(.weekday, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date)
+        let weekday = calendar.component(.weekday, from: date)
 
         if (year >= 2014) && (month == 1) && (weekOfMonth == 2) && (weekday == 2) {
             holiday.isHoliday = true
@@ -58,9 +58,9 @@ public class JapaneseNationalHoliday {
     private func getKenkokukinen_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 2) && (day == 11) {
             holiday.isHoliday = true
@@ -76,9 +76,9 @@ public class JapaneseNationalHoliday {
     private func getSyunbun_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 3) && (day == getSyunbunbi(date: date)) {
             holiday.isHoliday = true
@@ -94,7 +94,7 @@ public class JapaneseNationalHoliday {
     private func getSyunbunbi(date: Date) -> Int {
         // 2000年以降の春分日を計算
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
         let syunbun: Int = Int(Double(20.69115) + (Double(year - 2000)*0.242194) - Double(Int((Double(year - 2000)/Double(4)))))
         return syunbun
     }
@@ -102,9 +102,9 @@ public class JapaneseNationalHoliday {
     private func getShowa_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 4) && (day == 29) {
             holiday.isHoliday = true
@@ -120,9 +120,9 @@ public class JapaneseNationalHoliday {
     private func getSokui_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year == 2019) && (month == 5) && (day == 1) {
             holiday.isHoliday = true
@@ -138,9 +138,9 @@ public class JapaneseNationalHoliday {
     private func getKenpokinenbi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 5) && (day == 3) {
             holiday.isHoliday = true
@@ -156,9 +156,9 @@ public class JapaneseNationalHoliday {
     private func getMidori_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 5) && (day == 4) {
             holiday.isHoliday = true
@@ -174,9 +174,9 @@ public class JapaneseNationalHoliday {
     private func getKodomo_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 5) && (day == 5) {
             holiday.isHoliday = true
@@ -192,11 +192,11 @@ public class JapaneseNationalHoliday {
     private func getUmi_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
-        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date.resetTime())
-        let weekday = calendar.component(.weekday, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
+        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date)
+        let weekday = calendar.component(.weekday, from: date)
 
         if (year == 2021) && (month == 6) && (day == 22) {
             holiday.isHoliday = true
@@ -220,9 +220,9 @@ public class JapaneseNationalHoliday {
     private func getYama_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year == 2021) && (month == 8) && (day == 8) {
             holiday.isHoliday = true
@@ -246,10 +246,10 @@ public class JapaneseNationalHoliday {
     private func getKeiro_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date.resetTime())
-        let weekday = calendar.component(.weekday, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date)
+        let weekday = calendar.component(.weekday, from: date)
 
         if (year >= 2014) && (month == 9) && (weekOfMonth == 3) && (weekday == 2) {
             holiday.isHoliday = true
@@ -265,9 +265,9 @@ public class JapaneseNationalHoliday {
     private func getSyubun_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 9) && (day == getSyubunbi(date: date)) {
             holiday.isHoliday = true
@@ -283,7 +283,7 @@ public class JapaneseNationalHoliday {
     private func getSyubunbi(date: Date) -> Int {
         // 2000年以降の春分日を計算
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
         let syubun: Int = Int(Double(23.09) + (Double(year - 2000)*Double(0.242194)) - Double(Int((Double(year - 2000)/Double(4)))))
         return syubun
     }
@@ -292,11 +292,11 @@ public class JapaneseNationalHoliday {
     private func getSport_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
-        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date.resetTime())
-        let weekday = calendar.component(.weekday, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
+        let weekOfMonth = calendar.component(.weekdayOrdinal, from: date)
+        let weekday = calendar.component(.weekday, from: date)
 
         if (year >= 2022) && (month == 10) && (weekOfMonth == 2) && (weekday == 2) {
             holiday.isHoliday = true
@@ -324,9 +324,9 @@ public class JapaneseNationalHoliday {
     private func getSokui_reiseiden_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year == 2019) && (month == 10) && (day == 22) {
             holiday.isHoliday = true
@@ -342,9 +342,9 @@ public class JapaneseNationalHoliday {
     private func getBunka_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 11) && (day == 3) {
             holiday.isHoliday = true
@@ -360,9 +360,9 @@ public class JapaneseNationalHoliday {
     private func getKinrokansya_no_hi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
         if (year >= 2014) && (month == 11) && (day == 23) {
             holiday.isHoliday = true
@@ -378,11 +378,11 @@ public class JapaneseNationalHoliday {
     private func getTennotanjobi(date: Date) -> Holiday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
-        let year = calendar.component(.year, from: date.resetTime())
-        let month = calendar.component(.month, from: date.resetTime())
-        let day = calendar.component(.day, from: date.resetTime())
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
 
-        let date20190501 = calendar.date(from: DateComponents(year: 2019, month: 5, day: 1))!.resetTime()
+        let date20190501 = calendar.date(from: DateComponents(year: 2019, month: 5, day: 1))!
         if (date20190501 <= date) {
             if (month == 2) && (day == 23) {
                 holiday.isHoliday = true
@@ -491,7 +491,7 @@ public class JapaneseNationalHoliday {
         var holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
         
-        var date1 = date.resetTime()
+        var date1 = date
 
         repeat {
             date1 = calendar.date(byAdding: .day, value: -1, to: date1)!
@@ -513,8 +513,8 @@ public class JapaneseNationalHoliday {
         let holiday = Holiday()
         let calendar = Calendar(identifier: .gregorian)
 
-        let dateYesterday = calendar.date(byAdding: .day, value: -1, to: date.resetTime())
-        let dateTomorrow = calendar.date(byAdding: .day, value: 1, to: date.resetTime())
+        let dateYesterday = calendar.date(byAdding: .day, value: -1, to: date)
+        let dateTomorrow = calendar.date(byAdding: .day, value: 1, to: date)
 
         let holidayYesterday = getRestrictHoliday(date: dateYesterday!)
         let holidayTomorrow = getRestrictHoliday(date: dateTomorrow!)
@@ -535,24 +535,21 @@ public class JapaneseNationalHoliday {
     public func getHoliday(date: Date) -> Holiday {
         var holiday = Holiday()
 
-        /*
-        @Environment(\.locale) var locale
-        if (locale != Locale(identifier: "ja-JP")) {
+        if Locale.current.identifier != "ja_JP" {
             holiday.isHoliday = false
             holiday.holidayName = ""
             return holiday
         }
-         */
 
-        holiday = getRestrictHoliday(date: date);
+        holiday = getRestrictHoliday(date: date.resetTime());
         if (holiday.isHoliday) {
             return holiday
         }
-        holiday = getFurikae_kyujitsu(date: date);
+        holiday = getFurikae_kyujitsu(date: date.resetTime());
         if (holiday.isHoliday) {
             return holiday
         }
-        holiday = getKokumin_no_kyujitsu(date: date);
+        holiday = getKokumin_no_kyujitsu(date: date.resetTime());
         if (holiday.isHoliday) {
             return holiday
         }

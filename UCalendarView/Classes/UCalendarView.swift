@@ -117,14 +117,13 @@ struct UCEntryView: View, Equatable {
         ucEntryViewType: UCEntryViewType,
         ucEntry: UCEntry
     ) {
-        print("------UCEntryView:", Date())
         _ucEntryViewType = State(initialValue: ucEntryViewType)
         _ucEntry = State(initialValue: ucEntry)
     }
     
     public var body: some View {
         if self.ucEntryViewType == .table {
-            HStack {
+            HStack(spacing: 0) {
                 switch ucEntry.tableAlignment {
                 case .center:
                     Text(ucEntry.value)
@@ -210,7 +209,6 @@ private struct UCDayView: View {
         ucDay: UCDay,
         maxLinesInDayTable: Int
     ) {
-        print("----UCDayView:", Date())
         self.ucDay = ucDay
         self.maxLinesInDayTable = maxLinesInDayTable
     }
@@ -224,9 +222,9 @@ private struct UCDayView: View {
             } else {
                 Color(.clear)
             }
-            VStack() {
+            VStack(spacing: 0) {
                 let calendar = Calendar(identifier: .gregorian)
-                HStack {
+                HStack(spacing: 0) {
                     switch self.ucDayType {
                     case .sunday:
                         Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
@@ -258,7 +256,7 @@ private struct UCDayView: View {
                         .font(.system(size: 11))
                     Spacer()
                 }
-                ForEach (0..<self.maxLinesInDayTable) { index in
+                ForEach (0..<self.maxLinesInDayTable, id: \.self) { index in
                     if index < self.ucDay.ucEntries.count {
                         UCEntryView(
                             ucEntryViewType: .table,
@@ -422,13 +420,12 @@ private struct UCWeekView: View {
         ucWeek: UCWeek,
         maxLinesInDayTable: Int
     ) {
-        print("--UCWeekView:", Date())
         self.ucWeek = ucWeek
         self.maxLinesInDayTable = maxLinesInDayTable
     }
 
     public var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             ForEach (0..<7) { index in
                 UCDayView(
                     ucDay: self.ucWeek.ucDays[index],
@@ -462,13 +459,12 @@ private struct UCMonthView: View {
         ucMonth: UCMonth,
         maxLinesInDayTable: Int
     ) {
-        print("UCMonthView:", Date())
         self.ucMonth = ucMonth
         self.maxLinesInDayTable = maxLinesInDayTable
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack {
                 let bundle = Bundle(identifier: "com.jimdo.uchida001tmhr.UCalendarView")
                 Group {

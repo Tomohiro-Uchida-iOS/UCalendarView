@@ -163,7 +163,7 @@ struct ContentView: View {
                                 rightLabelColor: Color.cyan,
                                 tableFontSize: 10.0,
                                 listFontSize: 12.0,
-                                tableAlignment: .trailing
+                                tableAlignment: .leading
                             )
                             self.ucEntries.append(ucEntry)
                         }
