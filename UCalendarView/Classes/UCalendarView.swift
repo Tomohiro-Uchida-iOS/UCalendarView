@@ -117,6 +117,7 @@ struct UCEntryView: View, Equatable {
         ucEntryViewType: UCEntryViewType,
         ucEntry: UCEntry
     ) {
+        print("------UCEntryView:", Date())
         _ucEntryViewType = State(initialValue: ucEntryViewType)
         _ucEntry = State(initialValue: ucEntry)
     }
@@ -209,6 +210,7 @@ private struct UCDayView: View {
         ucDay: UCDay,
         maxLinesInDayTable: Int
     ) {
+        print("----UCDayView:", Date())
         self.ucDay = ucDay
         self.maxLinesInDayTable = maxLinesInDayTable
     }
@@ -256,17 +258,18 @@ private struct UCDayView: View {
                         .font(.system(size: 11))
                     Spacer()
                 }
-                ForEach (0..<self.maxEntriesInTable, id: \.self) { index in
-                    UCEntryView(
-                        ucEntryViewType: .table,
-                        ucEntry: self.ucDay.ucEntries[index]
-                    )
-                }
-                ForEach (0..<(self.maxLinesInDayTable-self.maxEntriesInTable), id: \.self) { _ in
-                    UCEntryView(
-                        ucEntryViewType: .table,
-                        ucEntry: UCEntry()
-                    )
+                ForEach (0..<self.maxLinesInDayTable) { index in
+                    if index < self.ucDay.ucEntries.count {
+                        UCEntryView(
+                            ucEntryViewType: .table,
+                            ucEntry: self.ucDay.ucEntries[index]
+                        )
+                    } else {
+                        UCEntryView(
+                            ucEntryViewType: .table,
+                            ucEntry: UCEntry()
+                        )
+                    }
                 }
             }
         }
@@ -318,6 +321,7 @@ private class UCWeek {
         ucDays: [UCDay]
     ) {
         self.weekOfMonth = weekOfMonth
+        self.ucDays.removeAll()
         ucDays.forEach{ day in
             let weekOfMonth = getWeekOfMonth(thisMonth: thisMonth, day: day.date)
             if weekOfMonth == self.weekOfMonth {
@@ -418,15 +422,16 @@ private struct UCWeekView: View {
         ucWeek: UCWeek,
         maxLinesInDayTable: Int
     ) {
+        print("--UCWeekView:", Date())
         self.ucWeek = ucWeek
         self.maxLinesInDayTable = maxLinesInDayTable
     }
 
     public var body: some View {
         HStack {
-            ForEach (self.ucWeek.ucDays, id: \.uuid) { ucDay in
+            ForEach (0..<7) { index in
                 UCDayView(
-                    ucDay: ucDay,
+                    ucDay: self.ucWeek.ucDays[index],
                     maxLinesInDayTable: maxLinesInDayTable
                 )
             }
@@ -457,6 +462,7 @@ private struct UCMonthView: View {
         ucMonth: UCMonth,
         maxLinesInDayTable: Int
     ) {
+        print("UCMonthView:", Date())
         self.ucMonth = ucMonth
         self.maxLinesInDayTable = maxLinesInDayTable
     }
@@ -509,9 +515,9 @@ private struct UCMonthView: View {
                     Spacer()
                 }
             }
-            ForEach (self.ucMonth.ucWeeks, id: \.uuid) { ucWeek in
+            ForEach (0..<6) { index in
                 UCWeekView(
-                    ucWeek: ucWeek,
+                    ucWeek: self.ucMonth.ucWeeks[index],
                     maxLinesInDayTable: maxLinesInDayTable
                 )
             }

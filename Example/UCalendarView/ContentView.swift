@@ -138,12 +138,13 @@ struct ContentView: View {
     var body: some View {
         
         ZStack {
-            UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 5, addButton: true)
+            UCalendarView(month: self.month, ucEntries: self.ucEntries, maxLinesInDayTable: 4, addButton: true)
                 .onAppear() {
                     let calendar = Calendar(identifier: .gregorian)
                     var components = DateComponents()
                     components.year = calendar.component(.year, from: month)
                     components.month = calendar.component(.month, from: month)
+                    self.ucEntries.removeAll()
                     for day in 1...28 {
                         components.day = day
                         for item in 1...3 {
