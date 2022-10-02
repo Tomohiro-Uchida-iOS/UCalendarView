@@ -198,6 +198,7 @@ private struct UCDayView: View {
     private var ucDay: UCDay
     @State var ucDayType: UCDayViewType = .weekday
     var maxLinesInDayTable: Int
+    let holiday = JapaneseNationalHoliday()
     @State var maxEntriesInTable: Int = 0
     @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var detailedEntryViewList: EntryViewList
@@ -230,14 +231,29 @@ private struct UCDayView: View {
                             .foregroundColor(Color.red)
                             .font(.system(size: 11))
                     case .saturday:
-                        Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
-                            .foregroundColor(Color.blue)
-                            .font(.system(size: 11))
+                        if holiday.getHoliday(date: ucDay.date.resetTime()).isHoliday {
+                            Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                                .foregroundColor(Color.red)
+                                .font(.system(size: 11))
+                        } else {
+                            Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                                .foregroundColor(Color.blue)
+                                .font(.system(size: 11))
+                        }
                     default:
-                        Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
-                            .foregroundColor(Color.black)
-                            .font(.system(size: 11))
+                        if holiday.getHoliday(date: ucDay.date.resetTime()).isHoliday {
+                            Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                                .foregroundColor(Color.red)
+                                .font(.system(size: 11))
+                        } else {
+                            Text(String(format: "%d", calendar.component(.day, from: self.ucDay.date.resetTime())))
+                                .foregroundColor(Color.black)
+                                .font(.system(size: 11))
+                        }
                     }
+                    Text(holiday.getHoliday(date: ucDay.date.resetTime()).holidayName)
+                        .foregroundColor(Color.black)
+                        .font(.system(size: 11))
                     Spacer()
                 }
                 ForEach (0..<self.maxEntriesInTable, id: \.self) { index in
@@ -316,23 +332,78 @@ private class UCWeek {
     ) -> Int {
         let calendar = Calendar(identifier: .gregorian)
         let monthOfDay = calendar.component(.month, from: day)
-        if monthOfDay < thisMonth {
-            return 1
-        } else if thisMonth < monthOfDay {
-            let minus = DateComponents(month: -1)
-            let previousMonth = calendar.date(byAdding: minus, to: day)!
-            var day1st = DateComponents()
-            day1st.year = calendar.component(.year, from: previousMonth)
-            day1st.month = calendar.component(.month, from: previousMonth)
-            day1st.day = 1
-            let firstDay = calendar.date(from: day1st)!
-            let add = DateComponents(month: 1, day: -1) // 月初から1ヶ月進めて1日戻す
-            let lastDay = calendar.date(byAdding: add, to: firstDay)!
-            let weekOfLastDay = calendar.component(.weekOfMonth, from: lastDay)
-            let weekOfDay = calendar.component(.weekOfMonth, from: day)
-            return weekOfLastDay + weekOfDay - 1
+        if thisMonth == 12 {
+            if monthOfDay == 11 {
+                return 1
+            } else if monthOfDay == 1 {
+                let minus = DateComponents(month: -1)
+                let previousMonth = calendar.date(byAdding: minus, to: day)!
+                var day1st = DateComponents()
+                day1st.year = calendar.component(.year, from: previousMonth)
+                day1st.month = calendar.component(.month, from: previousMonth)
+                day1st.day = 1
+                let firstDay = calendar.date(from: day1st)!
+                let add = DateComponents(month: 1, day: -1) // 月初から1ヶ月進めて1日戻す
+                let lastDay = calendar.date(byAdding: add, to: firstDay)!
+                let weekOfLastDay = calendar.component(.weekOfMonth, from: lastDay)
+                let weekOfDay = calendar.component(.weekOfMonth, from: day)
+                let weekdayOfLastDay = calendar.component(.weekday, from: lastDay)
+                if weekdayOfLastDay == 7 {
+                    return weekOfLastDay + weekOfDay
+                } else {
+                    return weekOfLastDay + weekOfDay - 1
+                }
+            } else {
+                return calendar.component(.weekOfMonth, from: day)
+            }
+        } else if thisMonth == 1 {
+            if monthOfDay == 12 {
+                return 1
+            } else if monthOfDay == 2 {
+                let minus = DateComponents(month: -1)
+                let previousMonth = calendar.date(byAdding: minus, to: day)!
+                var day1st = DateComponents()
+                day1st.year = calendar.component(.year, from: previousMonth)
+                day1st.month = calendar.component(.month, from: previousMonth)
+                day1st.day = 1
+                let firstDay = calendar.date(from: day1st)!
+                let add = DateComponents(month: 1, day: -1) // 月初から1ヶ月進めて1日戻す
+                let lastDay = calendar.date(byAdding: add, to: firstDay)!
+                let weekOfLastDay = calendar.component(.weekOfMonth, from: lastDay)
+                let weekOfDay = calendar.component(.weekOfMonth, from: day)
+                let weekdayOfLastDay = calendar.component(.weekday, from: lastDay)
+                if weekdayOfLastDay == 7 {
+                    return weekOfLastDay + weekOfDay
+                } else {
+                    return weekOfLastDay + weekOfDay - 1
+                }
+            } else {
+                return calendar.component(.weekOfMonth, from: day)
+            }
         } else {
-            return calendar.component(.weekOfMonth, from: day)
+            if monthOfDay < thisMonth {
+                return 1
+            } else if thisMonth < monthOfDay {
+                let minus = DateComponents(month: -1)
+                let previousMonth = calendar.date(byAdding: minus, to: day)!
+                var day1st = DateComponents()
+                day1st.year = calendar.component(.year, from: previousMonth)
+                day1st.month = calendar.component(.month, from: previousMonth)
+                day1st.day = 1
+                let firstDay = calendar.date(from: day1st)!
+                let add = DateComponents(month: 1, day: -1) // 月初から1ヶ月進めて1日戻す
+                let lastDay = calendar.date(byAdding: add, to: firstDay)!
+                let weekOfLastDay = calendar.component(.weekOfMonth, from: lastDay)
+                let weekOfDay = calendar.component(.weekOfMonth, from: day)
+                let weekdayOfLastDay = calendar.component(.weekday, from: lastDay)
+                if weekdayOfLastDay == 7 {
+                    return weekOfLastDay + weekOfDay
+                } else {
+                    return weekOfLastDay + weekOfDay - 1
+                }
+            } else {
+                return calendar.component(.weekOfMonth, from: day)
+            }
         }
     }
 }
@@ -362,7 +433,6 @@ private struct UCWeekView: View {
         }
     }
 }
-
 
 private class UCMonth {
     var month: Date
@@ -555,7 +625,7 @@ private struct UCalendarViewImpl: View {
         for week in 1...6 {
             let ucWeek = UCWeek(
                 thisMonth: calendar.component(.month, from: month),
-                weekOfMonth:week,
+                weekOfMonth: week,
                 ucDays: ucDays
             )
             ucWeeks.append(ucWeek)
@@ -620,6 +690,7 @@ private struct UCalendarViewImpl: View {
         @State var dateFormatter = DateFormatter()
         @EnvironmentObject var beltDate: BeltDate
         private var ucAddCallback: (UCAddEntry) -> Void
+        let holiday = JapaneseNationalHoliday()
         
         init(
             addButton: Bool,
@@ -652,6 +723,10 @@ private struct UCalendarViewImpl: View {
                         }
                         gUcCallback.addUCEntry?(ucAddEntry, self.ucAddCallback)
                     })
+                }
+                HStack {
+                    Spacer()
+                    Text(holiday.getHoliday(date: beltDate.date).holidayName)
                 }
             }
             .onAppear() {
