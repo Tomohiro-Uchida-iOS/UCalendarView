@@ -67,6 +67,8 @@ struct ContentView: View {
         
         var body: some View {
             VStack {
+                Spacer()
+                Text("AddingValue")
                 HStack {
                     TextField("Value", text: $value)
                         .border(.black)
@@ -94,6 +96,7 @@ struct ContentView: View {
                 } label: {
                     Text("Done")
                 }
+                Spacer()
             }
         }
     }
@@ -117,6 +120,8 @@ struct ContentView: View {
         
         var body: some View {
             VStack {
+                Spacer()
+                Text("EdittingValue")
                 HStack {
                     TextField("Value", text: $value)
                         .border(.black)
@@ -131,6 +136,7 @@ struct ContentView: View {
                 } label: {
                     Text("Done")
                 }
+                Spacer()
             }
         }
     }

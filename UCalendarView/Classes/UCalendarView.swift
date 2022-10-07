@@ -104,8 +104,8 @@ public class UCEntry: Equatable {
 struct UCEntryView: View, Equatable {
         
     var uuid = UUID()
-    @State var ucEntryViewType: UCEntryViewType = .table
-    @State var ucEntry: UCEntry
+    var ucEntryViewType: UCEntryViewType = .table
+    var ucEntry: UCEntry
     @EnvironmentObject var obsObject: ObserveModel
     @EnvironmentObject var calendarDate: CalendarDate
 
@@ -117,8 +117,8 @@ struct UCEntryView: View, Equatable {
         ucEntryViewType: UCEntryViewType,
         ucEntry: UCEntry
     ) {
-        _ucEntryViewType = State(initialValue: ucEntryViewType)
-        _ucEntry = State(initialValue: ucEntry)
+        self.ucEntryViewType = ucEntryViewType
+        self.ucEntry = ucEntry
     }
     
     public var body: some View {
@@ -466,7 +466,7 @@ private struct UCMonthView: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack {
-                let bundle = Bundle(identifier: "com.jimdo.uchida001tmhr.UCalendarView")
+                let bundle = Bundle(identifier: "com.cocoapods.UCalendarView")
                 Group {
                     Spacer()
                     Text(NSLocalizedString("LabelSunday", bundle: bundle!, comment: ""))
@@ -668,7 +668,7 @@ private struct UCalendarViewImpl: View {
 
     private func ucEditCallback(ucEditEntry: UCEditEntry) {
         let index = getIndexFromApplicationTag(applicationTag: ucEditEntry.applicationTag)
-        if index > 0 {
+        if index >= 0 {
             entryList.entries[index].date = ucEditEntry.date
             entryList.entries[index].leftLabel = ucEditEntry.leftLabel
             entryList.entries[index].leftLabelColor = ucEditEntry.leftLabelColor
@@ -845,7 +845,7 @@ private struct UCalendarViewImpl: View {
                 }
                 HStack {
                     Spacer()
-                    let bundle = Bundle(identifier: "com.jimdo.uchida001tmhr.UCalendarView")
+                    let bundle = Bundle(identifier: "com.cocoapods.UCalendarView")
                     Button(NSLocalizedString("ButtonToday", bundle: bundle!,  comment: "")) {
                         calendarDate.date = Date().resetTime()
                         ucMonth.month = calendarDate.date

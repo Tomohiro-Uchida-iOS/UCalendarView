@@ -468,7 +468,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/UCalendarView/UCalendarView.modulemap";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jimdo.uchida001tmhr.UCalendarView;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cocoapods.UCalendarView;
 				PRODUCT_MODULE_NAME = UCalendarView;
 				PRODUCT_NAME = UCalendarView;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -509,7 +509,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jimdo.uchida001tmhr.Pods-UCalendarView-Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cocoapods.Pods-UCalendarView-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -543,7 +543,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/UCalendarView/UCalendarView.modulemap";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jimdo.uchida001tmhr.UCalendarView;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cocoapods.UCalendarView;
 				PRODUCT_MODULE_NAME = UCalendarView;
 				PRODUCT_NAME = UCalendarView;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -712,7 +712,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jimdo.uchida001tmhr.Pods-UCalendarView-Tests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cocoapods.Pods-UCalendarView-Tests";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -749,7 +749,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jimdo.uchida001tmhr.Pods-UCalendarView-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cocoapods.Pods-UCalendarView-Example";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
@@ -787,7 +787,7 @@
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
 				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jimdo.uchida001tmhr.Pods-UCalendarView-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cocoapods.Pods-UCalendarView-Example";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

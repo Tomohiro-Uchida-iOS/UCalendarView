@@ -11,7 +11,7 @@ import SwiftUI
 
 public class JapaneseNationalHoliday {
     
-    let bundle = Bundle(identifier: "com.jimdo.uchida001tmhr.UCalendarView")
+    let bundle = Bundle(identifier: "com.cocoapods.UCalendarView")
 
     public class Holiday {
         var isHoliday: Bool = false
