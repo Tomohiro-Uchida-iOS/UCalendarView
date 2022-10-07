@@ -17,7 +17,7 @@
 		955595B43EE2F7E82F101C619D31B6F8 /* Localizable.strings in Sources */ = {isa = PBXBuildFile; fileRef = 25186C90A99C4752F5073E0D773925DB /* Localizable.strings */; };
 		A13484D759D4EB08DA86CEA4DD621C13 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		A18A644AE577E3FA6F10A6E2D7A9A99B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
-		B1C1D9CA28E900EE00EE22CB /* JapaneseNationalHoliday.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C1D9C928E900EE00EE22CB /* JapaneseNationalHoliday.swift */; };
+		B1B3B0BC28F0E144009BA221 /* JapaneseNationalHoliday.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B3B0BB28F0E144009BA221 /* JapaneseNationalHoliday.swift */; };
 		BF75436A98BE6996234D873667355CD2 /* Pods-UCalendarView_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BF3C9CA1F322D44465BFDBB0BEA50D4 /* Pods-UCalendarView_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FAAC548DB97124CCA60E1160057586B0 /* UCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C9A33B50F7A2D7E9CB96EFB2BA639CE /* UCalendarView.swift */; };
 		FCF4B74F1CB957E090E3A1DA5F876D4F /* Localizable.strings in Sources */ = {isa = PBXBuildFile; fileRef = 2A39782CCA214A47FDD0032396E60793 /* Localizable.strings */; };
@@ -65,7 +65,7 @@
 		A04AC16AD30E0663CC0F486A494D315B /* Pods-UCalendarView_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-UCalendarView_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		A56F48BC6A6B5F19B6F69F36511C05EE /* Pods-UCalendarView_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-UCalendarView_Example-frameworks.sh"; sourceTree = "<group>"; };
 		AD4DB9941B3EA17E5D28BD054B506243 /* Pods-UCalendarView_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-UCalendarView_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		B1C1D9C928E900EE00EE22CB /* JapaneseNationalHoliday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JapaneseNationalHoliday.swift; sourceTree = "<group>"; };
+		B1B3B0BB28F0E144009BA221 /* JapaneseNationalHoliday.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JapaneseNationalHoliday.swift; path = UCalendarView/Classes/JapaneseNationalHoliday.swift; sourceTree = "<group>"; };
 		C1CF445997D5DDF0EB12123DDB784B2D /* Pods-UCalendarView_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-UCalendarView_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
 		C9B0ACE6B5BF68BA759355BEC5B259E0 /* UCalendarView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = UCalendarView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D024596AE07F23243F0CD93A7C3E3FE9 /* Pods-UCalendarView_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-UCalendarView_Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -113,7 +113,7 @@
 			children = (
 				FF50243422C67C3BF7EBAF79B8D981D6 /* CommonFunc.swift */,
 				8C9A33B50F7A2D7E9CB96EFB2BA639CE /* UCalendarView.swift */,
-				B1C1D9C928E900EE00EE22CB /* JapaneseNationalHoliday.swift */,
+				B1B3B0BB28F0E144009BA221 /* JapaneseNationalHoliday.swift */,
 				991B4421829876B7868E896A3C48ACB2 /* Localizable.strings */,
 				9DA2A73D7BB62EFC193C4E098E0BD293 /* Pod */,
 				925E52B9A7E6A4E2679EB4A484B1FD96 /* Support Files */,
@@ -402,8 +402,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				772CCF6D047F49CF516B096E56857476 /* CommonFunc.swift in Sources */,
-				B1C1D9CA28E900EE00EE22CB /* JapaneseNationalHoliday.swift in Sources */,
 				955595B43EE2F7E82F101C619D31B6F8 /* Localizable.strings in Sources */,
+				B1B3B0BC28F0E144009BA221 /* JapaneseNationalHoliday.swift in Sources */,
 				FCF4B74F1CB957E090E3A1DA5F876D4F /* Localizable.strings in Sources */,
 				FAAC548DB97124CCA60E1160057586B0 /* UCalendarView.swift in Sources */,
 				5CBC5286A6629CEAD127E1C4E06DCE7A /* UCalendarView-dummy.m in Sources */,
