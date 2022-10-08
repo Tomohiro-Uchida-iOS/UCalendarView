@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'UCalendarView'
-  s.version          = '1.0.1'
+  s.version          = '1.0.2'
   s.summary          = 'CalendarView that contains some entries in day cells.'
   s.swift_versions   = '5'
 
